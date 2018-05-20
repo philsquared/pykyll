@@ -55,9 +55,10 @@ def formatDateForRss( date ):
     return date.strftime(format="%a, %d %b %Y %H:%M:%S %z") + "+0000"
 
 class Posts:
-    def __init__( self, rootUrl, postsFolder, outputFolder ):
+    def __init__( self, rootUrl, postsFolder, outputFolder, contentFolder="" ):
         self.rootUrl = rootUrl
         self.postsFolder = postsFolder
+        self.contentFolder = contentFolder
         self.postInfos = []
         self.redirects = []
 
@@ -106,7 +107,7 @@ class Posts:
             next = None
 
         # !TBD: Only write file if timestamp differs (or flag set)
-        writePost( self.rootUrl, templater, post, relativeUrl, canonicalUrl=canonicalUrl, next=next, prev=prev )
+        writePost( self.rootUrl, templater, post, os.path.join( self.contentFolder, relativeUrl ), canonicalUrl=canonicalUrl, next=next, prev=prev )
 
         # If page properties were generated, write them back
         post.updateIfDirty()
@@ -126,8 +127,8 @@ class Posts:
     def writeRedirects( self ):
         redirectTemplater = Templater( "redirect" )
         for redirect in self.redirects:
-            redirectPath = redirect["redirectPath"]
-            redirectDir = os.path.join( "docs", os.path.dirname( redirectPath ) )
+            redirectPath = os.path.join( self.contentFolder, redirect["redirectPath"] )
+            redirectDir = os.path.dirname( redirectPath )
             ensureDirs(redirectDir)
             redirectTemplater.vars["url"] = self.rootUrl + "/" + redirect["url"]
             redirectTemplater.writeFile( redirectPath )
@@ -138,10 +139,10 @@ class Posts:
         indexTemplater = Templater( "index" )
         indexTemplater.vars["title"] = "Index"
         indexTemplater.vars["entries"] = entries
-        indexTemplater.writeFile( "post_index.html" )
+        indexTemplater.writeFile( os.path.join( self.contentFolder, "post_index.html" ) )
 
     def writeRss( self, numberOfPosts ):
-        with codecs.open( "docs/main.rss", "w", "utf-8" ) as outFile:
+        with codecs.open( os.path.join( self.contentFolder, "main.rss" ), "w", "utf-8" ) as outFile:
             rssItemTemplater = Templater( "rssItem" )
             rssStartTemplater = Templater( "rssStart" )
             rssStartTemplater.vars["lastBuildDate"] = formatDateForRss( datetime.datetime.now() )

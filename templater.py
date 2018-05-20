@@ -165,5 +165,5 @@ class Templater:
 
 	def writeFile( self, toHtmlFile ):
 		print( "Generating: " + toHtmlFile )
-		write( os.path.join( "docs", toHtmlFile ), self.generate() )
+		write( toHtmlFile, self.generate() )
 
