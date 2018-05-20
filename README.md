@@ -1,7 +1,7 @@
-# pykyll
-A static site generator, with similarities to Jekyll, in Python.
+# PyKyll
+A static site generator, with similarities to Jekyll, in Python. Pronounced like "Pickle".
 
-This is currently intended to be used by including this repo as a submodule - but there's no reason that other methdos shouldn't work.
+This is currently intended to be used by including this repo as a submodule - but there's no reason that other methods shouldn't work.
 
 Sites are generated from templates, posts (blog posts or articles), and (fixed) content.
 
@@ -11,10 +11,14 @@ Templates use a simple templating language with the following features:
 
 All directives are enclosed in double braces (`{{ ... }}`).
 
-`{{$<name>}}`
+```
+{{$<name>}}
+```
 expands the value of the variable named by `<name>`
 
-`{{#include <name>#}}`
+```
+{{#include <name>#}}
+```
 includes the file `<name>.template.html` in the `_templates` folder. Works like a C pre-processor #include.
 
 ```
