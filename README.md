@@ -20,7 +20,8 @@ includes the file `<name>.template.html` in the `_templates` folder. Works like 
 ```
 {{%for <local name> in <list name>:
 	<pattern to repeat>
-%}}```
+%}}
+```
 Loops over the `<list name>` variable (which must be a list/ array) and binds each element to the `<local name>`, which can be expanded in the inner block.
 
 If the elements being iterated in a `for` expression are tuples you can bind multiple variables as a comma separated list.
