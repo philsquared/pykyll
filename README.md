@@ -17,7 +17,8 @@ expands the value of the variable named by `<name>`
 `{{#include <name>#}}`
 includes the file `<name>.template.html` in the `_templates` folder. Works like a C pre-processor #include.
 
-```{{%for <local name> in <list name>:
+```
+{{%for <local name> in <list name>:
 	<pattern to repeat>
 %}}```
 Loops over the `<list name>` variable (which must be a list/ array) and binds each element to the `<local name>`, which can be expanded in the inner block.
