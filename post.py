@@ -86,6 +86,45 @@ def makeTimestampFromFilename( filename ):
 
     return "{} {} {} at {}:{}".format( ordinal(day), month, year, str(hour).zfill(2), str(minute).zfill(2) )
 
+def removeTags( text ):
+    tagParser = re.compile(r'(.*?)<(.*?)>(.*)', re.DOTALL)
+    keepLooping = True
+    while keepLooping:
+        m = tagParser.match( text )
+        if m:
+            text = m.group(1) + m.group(3)
+        else:
+            keepLooping = False
+    return text
+
+def makeDescription( content ):
+    content = removeTags( content )
+
+    # remove anything that shouldn't be in an attribiute
+    content = replaceAll( content, {
+        '"': "'",
+        "\n": " ",
+        "\t": " ",
+        "  ": " ",
+        "!": ".",
+        "?": "." } )
+
+    # !TBD: more substitutions?
+
+    sentences = [sentence.strip() for sentence in content.split(". ")]
+
+    description = ""
+    maxDescriptionLength = 300
+    for sentence in sentences:
+        biggerDescription = description + sentence + ". "
+        if len( biggerDescription ) < maxDescriptionLength:
+            description = biggerDescription
+        else:
+            if len( description ) == 0:
+                description = biggerDescription[:maxDescriptionLength]
+            break
+    return description.strip()
+
 class Post:
 
     # !TBD: refactor so that only <script> header is read in constructor,

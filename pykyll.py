@@ -2,7 +2,7 @@ from templater import Templater
 
 import re
 import os
-from post import Post
+from post import Post, makeDescription
 import codecs
 import datetime
 from urlparse import urlparse
@@ -27,6 +27,8 @@ def writePost( rootUrl, postTemplater, post, htmlFile, canonicalUrl, next, prev 
     postTemplater.vars["title"] = post.title
     postTemplater.vars["timestamp"] = post.timestamp()
     postTemplater.vars["content"] = post.content
+    postTemplater.vars["description"] = makeDescription( post.content )
+
     if len(post.title) > 25:
         postTemplater.vars["title-class"] = "smallTitle"
     else:
