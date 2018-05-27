@@ -126,6 +126,37 @@ class Posts:
         for i, _ in enumerate(self.postInfos):
             self.writePost( templater, i )
 
+    def writeSummaryPage( self, filename ):
+        templater = Templater( "post-summary" )
+        templater.vars["rootdir"] = "../"
+        templater.vars["title"] = "News"
+
+        propertyList = []
+        for postInfo in self.postInfos:
+            post = Post( os.path.join( self.postsFolder, postInfo["filename"] ) )
+
+            if len(propertyList) == 0:
+                titleClass = ""
+            else:
+                titleClass = "old-news"
+
+            if len(post.title) > 25:
+                titleClass = titleClass + " smallTitle"
+
+            templater.vars["tags"] = ""
+            tags = []
+            if "tags" in post.properties:
+                tags = post.properties["tags"].split(",")
+                tags = [tag.strip() for tag in tags]
+
+            postProperties = ( titleClass, post.title, post.timestamp(), tags, post.content )
+            propertyList.append( postProperties )
+
+        templater.vars["post-properties"] = propertyList
+        templater.vars["description"] = "!TBD"
+        templater.writeFile(filename)
+
+
     def writeRedirects( self ):
         redirectTemplater = Templater( "redirect" )
         for redirect in self.redirects:
