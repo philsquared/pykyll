@@ -174,8 +174,8 @@ class Posts:
         indexTemplater.vars["entries"] = entries
         indexTemplater.writeFile( os.path.join( self.contentFolder, "post_index.html" ) )
 
-    def writeRss( self, numberOfPosts ):
-        with codecs.open( os.path.join( self.contentFolder, "main.rss" ), "w", "utf-8" ) as outFile:
+    def writeRss( self, numberOfPosts, name="main.rss" ):
+        with codecs.open( os.path.join( self.contentFolder, name ), "w", "utf-8" ) as outFile:
             rssItemTemplater = Templater( "rssItem" )
             rssStartTemplater = Templater( "rssStart" )
             rssStartTemplater.vars["lastBuildDate"] = formatDateForRss( datetime.datetime.now() )
