@@ -132,8 +132,11 @@ class Posts:
         templater.vars["title"] = "News"
 
         propertyList = []
+        description = ""
         for postInfo in self.postInfos:
             post = Post( os.path.join( self.postsFolder, postInfo["filename"] ) )
+            if description == "":
+                description = makeDescription( post.content )
 
             if len(propertyList) == 0:
                 titleClass = ""
@@ -153,7 +156,7 @@ class Posts:
             propertyList.append( postProperties )
 
         templater.vars["post-properties"] = propertyList
-        templater.vars["description"] = "!TBD"
+        templater.vars["description"] = description
         templater.writeFile(filename)
 
 
