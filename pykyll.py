@@ -28,6 +28,7 @@ def writePost( rootUrl, postTemplater, post, htmlFile, canonicalUrl, next, prev 
     postTemplater.vars["timestamp"] = post.timestamp()
     postTemplater.vars["content"] = post.content
     postTemplater.vars["description"] = makeDescription( post.content )
+    postTemplater.vars["url"] = canonicalUrl
 
     if len(post.title) > 25:
         postTemplater.vars["title-class"] = "smallTitle"
@@ -56,6 +57,11 @@ def writePost( rootUrl, postTemplater, post, htmlFile, canonicalUrl, next, prev 
 def formatDateForRss( date ):
     return date.strftime(format="%a, %d %b %Y %H:%M:%S %z") + "+0000"
 
+def makeSlugPath( outputFolder, slug ):
+    htmlFilename = slug + ".html"
+    return os.path.join(outputFolder, htmlFilename)
+
+
 class Posts:
     def __init__( self, rootUrl, postsFolder, outputFolder, contentFolder="" ):
         self.rootUrl = rootUrl
@@ -70,12 +76,11 @@ class Posts:
         print("Reading posts...")
         for filename in posts:
             post = Post( os.path.join( self.postsFolder, filename ) )
-            htmlFilename = post.slug + ".html"
-            relativeUrl = os.path.join( outputFolder, htmlFilename )
+            relativeUrl = makeSlugPath( outputFolder, post.slug )
             postInfo = { \
                 "filename": filename, \
                 "url": relativeUrl, \
-                "htmlFilename": htmlFilename, \
+                "htmlFilename": os.path.basename( relativeUrl ), \
                 "title": post.title, \
                 "timestamp": post.timestamp() }
 
@@ -152,7 +157,7 @@ class Posts:
                 tags = post.properties["tags"].split(",")
                 tags = [tag.strip() for tag in tags]
 
-            postProperties = ( titleClass, post.title, post.timestamp(), tags, post.content )
+            postProperties = ( titleClass, post.title, post.timestamp(), tags, post.content, postInfo["url"] )
             propertyList.append( postProperties )
 
         templater.vars["post-properties"] = propertyList
