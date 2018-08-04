@@ -50,8 +50,11 @@ class Templater:
 		if m:
 			name = m.group(2)
 			if name in self.vars:
-				replaced = m.group(1) + self.vars[name] + m.group(3)
-				l = self.applyVar( m.group(1) + self.vars[name] + m.group(3) )
+				start = m.group(1)
+				end = m.group(3)
+				var = self.vars[name]
+				replaced = u"{}{}{}".format( start, var, end )
+				l = self.applyVar( replaced )
 			else:
 				print( "** unresolved var: " + name + "**" )
 				replaced = m.group(1) + m.group(3)
@@ -158,10 +161,10 @@ class Templater:
 			yield line
 
 	def generate( self ):
-		yield '<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">'
+		yield u'<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">'
 		for line in self.generateContent():
 			yield line
-		yield '</html>'
+		yield u'</html>'
 
 	def writeFile( self, toHtmlFile ):
 		print( "Generating: " + toHtmlFile )
