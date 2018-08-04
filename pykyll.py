@@ -131,14 +131,17 @@ class Posts:
         for i, _ in enumerate(self.postInfos):
             self.writePost( templater, i )
 
-    def writeSummaryPage( self, filename ):
+    def writeSummaryPage( self, filename, numberOfPosts = 3 ):
         templater = Templater( "post-summary" )
         templater.vars["rootdir"] = "../"
         templater.vars["title"] = "News"
 
         propertyList = []
         description = ""
-        for postInfo in self.postInfos:
+
+        postInfos = self.postInfos[:numberOfPosts]
+
+        for postInfo in postInfos:
             post = Post( os.path.join( self.postsFolder, postInfo["filename"] ) )
             if description == "":
                 description = makeDescription( post.content )
