@@ -44,6 +44,18 @@ class Templater:
 		self.vars = vars.copy()
 		self.template = template
 
+	def applyVarsToPossiblyMultilineString( self, str ):
+		if "\n" in str:
+			originalLines = str.split("\n")
+			lines = [self.applyVar(line) for line in originalLines]
+			replacements = [line for line in lines if line]
+			if replacements:
+				return "\n".join( [b if a is None else a for a,b in zip(lines, originalLines)])
+			else:
+				return str
+		else:
+			return self.applyVar(str)
+
 	def applyVar( self, line ):
 		replaced = None
 		m = varParser.match(line)
@@ -54,12 +66,12 @@ class Templater:
 				end = m.group(3)
 				var = self.vars[name]
 				replaced = u"{}{}{}".format( start, var, end )
-				l = self.applyVar( replaced )
+				l = self.applyVarsToPossiblyMultilineString( replaced )
 			else:
 				print( "** unresolved var: " + name + "**" )
 				replaced = m.group(1) + m.group(3)
 		if replaced:
-			replaced2 = self.applyVar( replaced )
+			replaced2 = self.applyVarsToPossiblyMultilineString( replaced )
 			if replaced2:
 				return replaced2
 			else:
