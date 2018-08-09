@@ -23,7 +23,7 @@ def formatIf( formatStr, sub ):
     else:
         return ""
 
-def writePost( rootUrl, postTemplater, post, htmlFile, canonicalUrl, next, prev ):
+def writePost( rootUrl, postTemplater, post, htmlFile, canonicalUrl, next, prev, nextTitle="next", prevTitle="prev" ):
     postTemplater.vars["title"] = post.title
     postTemplater.vars["timestamp"] = post.timestamp()
     postTemplater.vars["content"] = post.content
@@ -40,8 +40,8 @@ def writePost( rootUrl, postTemplater, post, htmlFile, canonicalUrl, next, prev 
         tags = post.properties["tags"].split(",")
         postTemplater.vars["tags"] = [tag.strip() for tag in tags]
 
-    postTemplater.vars["next_post"] = formatIf( "<a id='next' href='{}'>Next</a>", next )
-    postTemplater.vars["prev_post"] = formatIf( "<a id='prev' href='{}'>Prev</a>", prev )
+    postTemplater.vars["next_post"] = formatIf( "<a id='" + nextTitle + "' href='{}'>Next</a>", next )
+    postTemplater.vars["prev_post"] = formatIf( "<a id='" + prevTitle + "' href='{}'>Prev</a>", prev )
 
 
     if "reddit_url" in post.properties:
