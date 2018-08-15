@@ -25,7 +25,7 @@ def formatIf( formatStr, sub ):
 
 def writePost( rootUrl, postTemplater, post, htmlFile, canonicalUrl, next, prev, nextTitle="next", prevTitle="prev" ):
     postTemplater.vars["title"] = post.title
-    postTemplater.vars["timestamp"] = post.timestamp()
+    postTemplater.vars["timestamp"] = post.timestamp
     postTemplater.vars["content"] = post.content
     postTemplater.vars["description"] = makeDescription( post.content )
     postTemplater.vars["url"] = canonicalUrl
@@ -68,6 +68,7 @@ class Posts:
         self.postsFolder = postsFolder
         self.contentFolder = contentFolder
         self.postInfos = []
+        self.draftPostInfos = []
         self.redirects = []
 
         posts = [f for f in os.listdir( postsFolder ) if os.path.isfile(os.path.join( postsFolder, f)) and f.endswith(".md")]
@@ -82,9 +83,12 @@ class Posts:
                 "url": relativeUrl, \
                 "htmlFilename": os.path.basename( relativeUrl ), \
                 "title": post.title, \
-                "timestamp": post.timestamp() }
+                "timestamp": post.timestamp }
 
-            self.postInfos.append( postInfo )
+            if post.isDraft:
+                self.draftPostInfos.append( postInfo )
+            else:
+                self.postInfos.append( postInfo )
 
             if "redirect" in post.properties:
                 url = urlparse( post.properties["redirect"] )
@@ -97,12 +101,20 @@ class Posts:
             
         print("... read")
 
-    def writePost( self, templater, index, relativeUrl = None ):
-        postInfo = self.postInfos[index]
+    def writePostInternal( self, templater, postInfo, prev = None, next = None, relativeUrl = None ):
         post = Post( os.path.join( self.postsFolder, postInfo["filename"] ) )
         canonicalUrl = postInfo["url"]
         if not relativeUrl:
             relativeUrl = canonicalUrl
+
+        # !TBD: Only write file if timestamp differs (or flag set)
+        writePost( self.rootUrl, templater, post, os.path.join( self.contentFolder, relativeUrl ), canonicalUrl=canonicalUrl, next=next, prev=prev )
+
+        # If page properties were generated, write them back
+        post.updateIfDirty()
+
+    def writePost( self, templater, index, relativeUrl = None ):
+        postInfo = self.postInfos[index]
 
         if index < len(self.postInfos)-1:
             prev = self.postInfos[index+1]["htmlFilename"]
@@ -113,11 +125,10 @@ class Posts:
         else:
             next = None
 
-        # !TBD: Only write file if timestamp differs (or flag set)
-        writePost( self.rootUrl, templater, post, os.path.join( self.contentFolder, relativeUrl ), canonicalUrl=canonicalUrl, next=next, prev=prev )
+        self.writePostInternal( templater, postInfo, prev, next, relativeUrl )
 
-        # If page properties were generated, write them back
-        post.updateIfDirty()
+    def writeDraftPost( self, postInfo, templater ):
+        self.writePostInternal( templater, postInfo )
 
     def writeFirstPost( self ):
         # !TBD: This should go in a template file?
@@ -128,8 +139,16 @@ class Posts:
         templater = Templater( "post" )
         templater.vars["rootdir"] = "../"
 
+        print "Generating posts: >>>"
         for i, _ in enumerate(self.postInfos):
             self.writePost( templater, i )
+        print "<<< done"
+
+        if len(self.draftPostInfos) > 0:
+            print "Generating drafts: >>>"
+            for postInfo in self.draftPostInfos:
+                self.writeDraftPost( postInfo, templater )
+            print "<<< done"
 
     def writeSummaryPage( self, filename, numberOfPosts = 3 ):
         templater = Templater( "post-summary" )
@@ -160,7 +179,7 @@ class Posts:
                 tags = post.properties["tags"].split(",")
                 tags = [tag.strip() for tag in tags]
 
-            postProperties = ( titleClass, post.title, post.timestamp(), tags, post.content, postInfo["url"] )
+            postProperties = ( titleClass, post.title, post.timestamp, tags, post.content, postInfo["url"] )
             propertyList.append( postProperties )
 
         templater.vars["post-properties"] = propertyList
@@ -201,7 +220,7 @@ class Posts:
                 rssItemTemplater.vars["content"] = post.content
                 rssItemTemplater.vars["title"] = post.title
                 rssItemTemplater.vars["link"] = link
-                rssItemTemplater.vars["timestamp"] = formatDateForRss( post.datetime() )
+                rssItemTemplater.vars["timestamp"] = formatDateForRss( post.datetime )
                 rssItemTemplater.vars["guid"] = post.properties["guid"]
                 if "tags" in post.properties:
                     tags = post.properties["tags"].split(",")

@@ -73,18 +73,10 @@ def makeSlug( str ):
     str = replaceAll( str, { "--": "-" } )
     return str.strip("-")
 
-def makeTimestampFromFilename( filename ):
-    m = dateParser.match( os.path.basename( filename ) )
-    if not m:
-        fatalError( "Unable to parse filename: '{}' is not a date/time".format( filename ) )
-    year = int(m.group(1))
-    monthNumber = int(m.group(2))
-    day = int(m.group(3))
-    hour = int(m.group(4))
-    minute = int(m.group(5))
-    month = calendar.month_name[monthNumber]
+def formatDatetime( dt ):
+    monthName = calendar.month_name[dt.month]
+    return "{} {} {} at {}:{}".format( ordinal(dt.day), monthName, dt.year, str(dt.hour).zfill(2), str(dt.minute).zfill(2) )
 
-    return "{} {} {} at {}:{}".format( ordinal(day), month, year, str(hour).zfill(2), str(minute).zfill(2) )
 
 def removeTags( text ):
     tagParser = re.compile(r'(.*?)<(.*?)>(.*)', re.DOTALL)
@@ -132,6 +124,17 @@ class Post:
     def __init__( self, filename ):
         self.properties = {}
         self.dirty = False
+        self.isDraft = "draft" in filename
+        if self.isDraft:
+            self.datetime = datetime.now()
+            self.timestamp = str(datetime.now())
+        else:
+            basename = os.path.basename(filename)
+            timestamp = basename[:13] + ":" + basename[14:-3]
+            self.datetime =  dateutil.parser.parse( timestamp )
+
+        self.timestamp = formatDatetime(self.datetime)
+
 
         contentWithMetadata = loadContent( filename )
 
@@ -166,9 +169,6 @@ class Post:
 
         self.slug = makeSlug( self.title )
         self.filename = filename
-
-    def timestamp(self):        
-        return makeTimestampFromFilename( self.filename )
 
     def datetime(self):        
         basename = os.path.basename( self.filename )
