@@ -23,6 +23,15 @@ def formatIf( formatStr, sub ):
     else:
         return ""
 
+def addRedditUrl( templater, post, rootUrl, canonicalUrl ):
+    if "reddit_url" in post.properties:
+        redditUrl = post.properties["reddit_url"]
+    else:
+        redditUrl = os.path.join( rootUrl, canonicalUrl )
+
+        templater.vars["reddit_url"] = "reddit_url='{}'".format( redditUrl )
+
+
 def writePost( rootUrl, postTemplater, post, htmlFile, canonicalUrl, next, prev, nextTitle="next", prevTitle="prev" ):
     postTemplater.vars["title"] = post.title
     postTemplater.vars["timestamp"] = post.timestamp
@@ -49,8 +58,7 @@ def writePost( rootUrl, postTemplater, post, htmlFile, canonicalUrl, next, prev,
     else:
         redditUrl = os.path.join( rootUrl, canonicalUrl )
 
-    postTemplater.vars["reddit_url"] = "reddit_url='{}'".format( redditUrl )
-
+    addRedditUrl( postTemplater, post, rootUrl, canonicalUrl )
 
     postTemplater.writeFile( htmlFile )
 
@@ -106,6 +114,7 @@ class Posts:
         canonicalUrl = postInfo["url"]
         if not relativeUrl:
             relativeUrl = canonicalUrl
+
 
         # !TBD: Only write file if timestamp differs (or flag set)
         writePost( self.rootUrl, templater, post, os.path.join( self.contentFolder, relativeUrl ), canonicalUrl=canonicalUrl, next=next, prev=prev )
@@ -179,7 +188,9 @@ class Posts:
                 tags = post.properties["tags"].split(",")
                 tags = [tag.strip() for tag in tags]
 
-            postProperties = ( titleClass, post.title, post.timestamp, tags, post.content, postInfo["url"] )
+            url = postInfo["url"]
+            rootedUrl = "reddit_url='{}'".format( os.path.join( self.rootUrl, url ) )
+            postProperties = (titleClass, post.title, post.timestamp, tags, post.content, url, rootedUrl)
             propertyList.append( postProperties )
 
         templater.vars["post-properties"] = propertyList
