@@ -121,8 +121,14 @@ class Templater:
 						if len(vars) == 1:
 							child.vars[forVar] = item
 						else:
-							for i, var in enumerate(vars):
-								child.vars[var] = item[i]
+							if isinstance(item, list)or isinstance(item, tuple):
+								for i, var in enumerate(vars):
+									child.vars[var] = item[i]
+							else:
+								for var in vars:
+									if var not in item:
+										raise Exception("** " + forContainer + " does not contain " + var + " **")
+									child.vars[var] = item[var]
 						for forLine in child.apply( defLines ):
 							yield forLine
 					forVar = None
