@@ -18,7 +18,8 @@ templateTagEndParser = re.compile( r'(.*)#}}(.*)' )
 varParser = re.compile( r'(.*){{\$(.+?)}}(.*)' )
 
 forTagStartParser = re.compile( r'(.*?){{%for\s+(.*?)\s+in\s+(.*?):(.*)' )
-forTagEndParser = re.compile( r'(.*?)%}}(.*)' )
+ifTagStartParser = re.compile( r'(.*?){{%if\s+(.*)' )
+tagEndParser = re.compile(r'(.*?)%}}(.*)')
 
 unknownTemplateParser = re.compile( r'{{' )
 
@@ -82,6 +83,7 @@ class Templater:
 		templateName = None
 		defLines = None
 		forVar = None
+		ifVar = None
 		forContainer = None
 
 		for line in templateLines:
@@ -101,37 +103,47 @@ class Templater:
 				else:
 					defLines.append( line )
 				continue
-			if forVar:
-				m = forTagEndParser.match(line)
+			if forVar or ifVar:
+				m = tagEndParser.match(line)
 				if m:
 					if m.group(1).strip() != '':
-						defLines.append( m.group(1) )
-					if not forContainer in self.vars:
-						forVar = None
-						continue				
-					container = self.vars[forContainer]
-					if not hasattr(container, "__len__"):
-						fatalError( "** " + forContainer + " is not a container **" )
-						forVar = None
-						continue
-					vars = [var.strip() for var in forVar.split(",")]
-					for item in container:
-						child = Templater( "", self.vars )
+						defLines.append(m.group(1))
+					if forVar:
+						if not forContainer in self.vars:
+							forVar = None
+							continue
+						container = self.vars[forContainer]
+						if not hasattr(container, "__len__"):
+							fatalError( "** " + forContainer + " is not a container **" )
+							forVar = None
+							continue
+						vars = [var.strip() for var in forVar.split(",")]
+						for item in container:
+							child = Templater( "", self.vars )
 
-						if len(vars) == 1:
-							child.vars[forVar] = item
-						else:
-							if isinstance(item, list)or isinstance(item, tuple):
-								for i, var in enumerate(vars):
-									child.vars[var] = item[i]
+							if len(vars) == 1:
+								child.vars[forVar] = item
 							else:
-								for var in vars:
-									if var not in item:
-										raise Exception("** " + forContainer + " does not contain " + var + " **")
-									child.vars[var] = item[var]
-						for forLine in child.apply( defLines ):
-							yield forLine
+								if isinstance(item, list)or isinstance(item, tuple):
+									for i, var in enumerate(vars):
+										child.vars[var] = item[i]
+								else:
+									for var in vars:
+										if var not in item:
+											raise Exception("** " + forContainer + " does not contain " + var + " **")
+										child.vars[var] = item[var]
+							for forLine in child.apply( defLines ):
+								yield forLine
+					else:
+						condition = False
+						if ifVar in self.vars:
+							condition = self.vars[ifVar]
+						if condition:
+							child = Templater("", self.vars)
+							for forLine in child.apply(defLines):
+								yield forLine
 					forVar = None
+					ifVar = None
 					defLines = None
 				else:
 					defLines.append( line )
@@ -159,6 +171,12 @@ class Templater:
 			if m:
 				forVar = m.group(2)
 				forContainer = m.group(3)
+				defLines = []
+				continue
+
+			m = ifTagStartParser.match(line)
+			if m:
+				ifVar = m.group(2)
 				defLines = []
 				continue
 
