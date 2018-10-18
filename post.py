@@ -91,7 +91,7 @@ def removeTags( text ):
             keepLooping = False
     return text
 
-def makeDescription( content ):
+def makeDescription( content, maxDescriptionLength = 300 ):
     content = removeTags( content )
 
     # remove anything that shouldn't be in an attribiute
@@ -108,7 +108,6 @@ def makeDescription( content ):
     sentences = [sentence.strip() for sentence in content.split(". ")]
 
     description = ""
-    maxDescriptionLength = 300
     for sentence in sentences:
         biggerDescription = description + sentence + ". "
         if len( biggerDescription ) < maxDescriptionLength:
