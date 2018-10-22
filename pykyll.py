@@ -71,13 +71,14 @@ def makeSlugPath( outputFolder, slug ):
 
 
 class Posts:
-    def __init__( self, rootUrl, postsFolder, outputFolder, contentFolder="" ):
+    def __init__( self, rootUrl, postsFolder, outputFolder, contentFolder="", seedVars={} ):
         self.rootUrl = rootUrl
         self.postsFolder = postsFolder
         self.contentFolder = contentFolder
         self.postInfos = []
         self.draftPostInfos = []
         self.redirects = []
+        self.seedVars = seedVars
 
         posts = [f for f in os.listdir( postsFolder ) if os.path.isfile(os.path.join( postsFolder, f)) and f.endswith(".md")]
         posts.sort(reverse=True)
@@ -139,14 +140,20 @@ class Posts:
     def writeDraftPost( self, postInfo, templater ):
         self.writePostInternal( templater, postInfo )
 
+    def addSeedVars(self, templater):
+        for k, v in self.seedVars.iteritems():
+            templater.vars[k] = v
+
     def writeFirstPost( self ):
         # !TBD: This should go in a template file?
         templater = Templater( "post" )
+        self.addSeedVars( templater );
         self.writePost( templater, 0, "index.html" )
 
     def writeAllPosts( self ):
         templater = Templater( "post" )
         templater.vars["rootdir"] = "../"
+        self.addSeedVars( templater );
 
         print "Generating posts: >>>"
         for i, _ in enumerate(self.postInfos):
@@ -163,6 +170,7 @@ class Posts:
         templater = Templater( "post-summary" )
         templater.vars["rootdir"] = "../"
         templater.vars["title"] = "News"
+        self.addSeedVars( templater );
 
         propertyList = []
         description = ""
