@@ -205,7 +205,7 @@ class Templater:
 			yield line
 
 	def generate( self ):
-		yield u'<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">'
+		yield u'<!DOCTYPE html>\n<html lang="en" xml:lang="en">'
 		for line in self.generateContent():
 			yield line
 		yield u'</html>'
