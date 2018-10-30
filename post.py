@@ -5,7 +5,6 @@ import dateutil.parser
 from datetime import datetime
 from utils import fatalError
 import uuid
-import markdown
 import codecs
 import json
 
@@ -39,12 +38,6 @@ urlReplacements = {
     "(": "", 
     ")": "",
     "#": "sharp" }
-
-def loadContent( mdFilename ):
-    with codecs.open ( mdFilename, "r", "utf-8" ) as contentFile:
-        mdText = contentFile.read()
-    mdText = mdText.replace("```c++", "```cpp" )
-    return markdown.markdown(mdText, extensions=['fenced_code'])
 
 def extractHtmlTitle( name, html ):
     m = htmlTitleParser.match(html)

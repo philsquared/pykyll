@@ -2,6 +2,7 @@ import re
 import json
 import os
 import codecs
+import markdown
 
 from utils import fatalError, ensureParentDirs
 
@@ -23,12 +24,18 @@ tagEndParser = re.compile(r'(.*?)%}}(.*)')
 
 unknownTemplateParser = re.compile( r'{{' )
 
+
 def ensureDirs( dir ):
     if not os.path.exists(dir):
     	os.makedirs(dir)
 def ensureParentDirs( dir ):
 	ensureDirs(os.path.dirname(dir))
 
+def loadContent( mdFilename ):
+    with codecs.open ( mdFilename, "r", "utf-8" ) as contentFile:
+        mdText = contentFile.read()
+    mdText = mdText.replace("```c++", "```cpp" )
+    return markdown.markdown(mdText, extensions=['fenced_code'])
 
 def loadTemplate( baseName ):
     with codecs.open ( "_templates/" + baseName + ".template.html", "r", "utf-8" ) as f:
@@ -158,7 +165,12 @@ class Templater:
 			# single line template
 			m = templateTagParser.match(line)
 			if m:
-				for line in self.apply( loadTemplate(m.group(2)) ):
+				filename = m.group(2)
+				if filename.endswith(".md"):
+					lines = loadContent( "_content/" + filename ).splitlines()
+				else:
+					lines = self.apply( loadTemplate(filename) )
+				for line in lines:
 					yield line
 				continue
 			
