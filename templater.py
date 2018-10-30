@@ -167,7 +167,7 @@ class Templater:
 			if m:
 				filename = m.group(2)
 				if filename.endswith(".md"):
-					lines = loadContent( "_content/" + filename ).splitlines()
+					lines = loadContent( "_content/" + filename ).splitlines( True)
 				else:
 					lines = self.apply( loadTemplate(filename) )
 				for line in lines:
