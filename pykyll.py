@@ -49,8 +49,12 @@ def writePost( rootUrl, postTemplater, post, htmlFile, canonicalUrl, next, prev,
         tags = post.properties["tags"].split(",")
         postTemplater.vars["tags"] = [tag.strip() for tag in tags]
 
-    postTemplater.vars["next_post"] = formatIf( "<a id='" + nextTitle + "' href='{}'>Next</a>", next )
-    postTemplater.vars["prev_post"] = formatIf( "<a id='" + prevTitle + "' href='{}'>Prev</a>", prev )
+    if next:
+        postTemplater.vars["next_post_title"] = nextTitle
+        postTemplater.vars["next_post_url"] = next
+    if prev:
+        postTemplater.vars["prev_post_title"] = prevTitle
+        postTemplater.vars["prev_post_url"] = prev
 
 
     if "reddit_url" in post.properties:
@@ -110,7 +114,7 @@ class Posts:
             
         print("... read")
 
-    def writePostInternal( self, templater, postInfo, prev = None, next = None, relativeUrl = None ):
+    def writePostInternal( self, templater, postInfo, prev = None, next = None, nextTitle=None, prevTitle=None, relativeUrl = None ):
         post = Post( os.path.join( self.postsFolder, postInfo["filename"] ) )
         canonicalUrl = postInfo["url"]
         if not relativeUrl:
@@ -118,7 +122,7 @@ class Posts:
 
 
         # !TBD: Only write file if timestamp differs (or flag set)
-        writePost( self.rootUrl, templater, post, os.path.join( self.contentFolder, relativeUrl ), canonicalUrl=canonicalUrl, next=next, prev=prev )
+        writePost( self.rootUrl, templater, post, os.path.join( self.contentFolder, relativeUrl ), canonicalUrl=canonicalUrl, next=next, prev=prev, nextTitle=nextTitle, prevTitle=prevTitle )
 
         # If page properties were generated, write them back
         post.updateIfDirty()
@@ -128,14 +132,18 @@ class Posts:
 
         if index < len(self.postInfos)-1:
             prev = self.postInfos[index+1]["htmlFilename"]
+            prevTitle = self.postInfos[index+1]["title"]
         else:
             prev = None
+            prevTitle=None
         if index > 0:
             next = self.postInfos[index-1]["htmlFilename"]
+            nextTitle = self.postInfos[index - 1]["title"]
         else:
             next = None
+            nextTitle = None
 
-        self.writePostInternal( templater, postInfo, prev, next, relativeUrl )
+        self.writePostInternal( templater, postInfo, prev, next, prevTitle=prevTitle, nextTitle=nextTitle, relativeUrl=relativeUrl )
 
     def writeDraftPost( self, postInfo, templater ):
         self.writePostInternal( templater, postInfo )
