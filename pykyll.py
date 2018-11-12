@@ -173,11 +173,12 @@ class Posts:
         self.addSeedVars( templater );
 
         propertyList = []
+        olderPropertyList = []
         description = ""
 
-        postInfos = self.postInfos[:numberOfPosts]
+        postInfos = self.postInfos #[:numberOfPosts]
 
-        for postInfo in postInfos:
+        for i, postInfo in enumerate(postInfos):
             post = Post( os.path.join( self.postsFolder, postInfo["filename"] ) )
             if description == "":
                 description = makeDescription( post.content )
@@ -199,9 +200,15 @@ class Posts:
             url = postInfo["url"]
             rootedUrl = "reddit_url='{}'".format( os.path.join( self.rootUrl, url ) )
             postProperties = (titleClass, post.title, post.timestamp, tags, post.content, url, rootedUrl)
-            propertyList.append( postProperties )
+
+            if i < numberOfPosts:
+                propertyList.append( postProperties )
+            else:
+                olderPropertyList.append(postProperties)
+
 
         templater.vars["post-properties"] = propertyList
+        templater.vars["older-post-properties"] = olderPropertyList
         templater.vars["description"] = description
         templater.writeFile(filename)
 
