@@ -3,9 +3,9 @@ import re
 import os
 import dateutil.parser
 from datetime import datetime
-from utils import fatalError
+from .utils import fatalError
 
-from templater import loadContent
+from .templater import loadContent
 import uuid
 import codecs
 import json

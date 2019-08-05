@@ -4,7 +4,7 @@ import os
 import codecs
 import markdown
 
-from utils import fatalError, ensureParentDirs
+from .utils import fatalError, ensureParentDirs
 
 defaultVars = {
     "rootdir": "",

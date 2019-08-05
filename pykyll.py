@@ -1,12 +1,12 @@
-from templater import Templater
+from .templater import Templater
 
 import re
 import os
-from post import Post, makeDescription
+from .post import Post, makeDescription
 import codecs
 import datetime
-from urlparse import urlparse
-from utils import ensureDirs
+from urllib.parse import urlparse
+from .utils import ensureDirs
 
 timeStripperParser = re.compile( r'(.*?) at .*' )
 
@@ -163,16 +163,16 @@ class Posts:
         templater.vars["rootdir"] = "../"
         self.addSeedVars( templater );
 
-        print "Generating posts: >>>"
+        print( "Generating posts: >>>" )
         for i, _ in enumerate(self.postInfos):
             self.writePost( templater, i )
-        print "<<< done"
+        print( "<<< done" )
 
         if len(self.draftPostInfos) > 0:
-            print "Generating drafts: >>>"
+            print("Generating drafts: >>>")
             for postInfo in self.draftPostInfos:
                 self.writeDraftPost( postInfo, templater )
-            print "<<< done"
+            print("<<< done")
 
     def writeSummaryPage( self, filename, numberOfPosts = 3 ):
         templater = Templater( "post-summary" )
