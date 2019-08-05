@@ -149,7 +149,7 @@ class Posts:
         self.writePostInternal( templater, postInfo )
 
     def addSeedVars(self, templater):
-        for k, v in self.seedVars.iteritems():
+        for k, v in self.seedVars.items():
             templater.vars[k] = v
 
     def writeFirstPost( self ):
