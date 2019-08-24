@@ -174,17 +174,12 @@ class Posts:
                 self.writeDraftPost( postInfo, templater )
             print("<<< done")
 
-    def writeSummaryPage( self, filename, numberOfPosts = 3 ):
-        templater = Templater( "post-summary" )
-        templater.vars["rootdir"] = "../"
-        templater.vars["title"] = "News"
-        self.addSeedVars( templater );
-
+    def summarise( self, numberOfPosts = 3, titlePrefix = "" ):
         propertyList = []
         olderPropertyList = []
         description = ""
 
-        postInfos = self.postInfos #[:numberOfPosts]
+        postInfos = self.postInfos
 
         for i, postInfo in enumerate(postInfos):
             post = Post( os.path.join( self.postsFolder, postInfo["filename"] ) )
@@ -199,7 +194,6 @@ class Posts:
             if len(post.title) > 25:
                 titleClass = titleClass + " smallTitle"
 
-            templater.vars["tags"] = ""
             tags = []
             if "tags" in post.properties:
                 tags = post.properties["tags"].split(",")
@@ -207,18 +201,14 @@ class Posts:
 
             url = postInfo["url"]
             rootedUrl = "reddit_url='{}'".format( os.path.join( self.rootUrl, url ) )
-            postProperties = (titleClass, post.title, post.timestamp, tags, post.content, url, rootedUrl)
+            postProperties = (titleClass, titlePrefix + post.title, post.timestamp, tags, post.content, url, rootedUrl)
 
             if i < numberOfPosts:
                 propertyList.append( postProperties )
             else:
                 olderPropertyList.append(postProperties)
 
-
-        templater.vars["post-properties"] = propertyList
-        templater.vars["older-post-properties"] = olderPropertyList
-        templater.vars["description"] = description
-        templater.writeFile(filename)
+        return propertyList, olderPropertyList, description, tags
 
 
     def writeRedirects( self ):
