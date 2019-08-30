@@ -163,7 +163,12 @@ class Post:
 
         #self.title, self.content = extractHtmlTitle( filename, contentWithMetadata )
 
-        self.slug = makeSlug( self.title )
+
+        if not "slug" in self.properties:
+            self.properties["slug"] = makeSlug( self.title )
+            self.dirty = True
+
+        self.slug = self.properties["slug"]
         self.filename = filename
 
     def datetime(self):        
