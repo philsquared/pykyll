@@ -52,17 +52,21 @@ def remove_tags(text):
     while keepLooping:
         m = tagParser.match( text )
         if m:
-            text = m.group(1) + m.group(3)
+            if m.group(2) == "/p":
+                text = m.group(1) + "\n" + m.group(3)
+            else:
+                text = m.group(1) + m.group(3)
         else:
             keepLooping = False
     return text
 
 
-def split_into_sentences( str ):
-    # !TBD: make this more sophisticated - e.g. don't split on . used for abbreviations, split on : ond other chars
-    sentences = [sentence.strip() for sentence in re.split( "\.[ \n\t]", str )]
-    # sentences = [sentence.strip() for sentence in re.split( "\.", str )]
-    return sentences
+def find_last_of( str, tokens ):
+    lastPositions = list(filter(lambda pos : pos > -1, [str.rfind(token) for token in tokens]))
+    if len(lastPositions) > 0:
+        return min( lastPositions )
+    else:
+        return -1
 
 
 def make_description( content, maxDescriptionLength = 300, attributeSafe = True ):
@@ -80,15 +84,17 @@ def make_description( content, maxDescriptionLength = 300, attributeSafe = True 
 
     # !TBD: more substitutions?
 
-    sentences = split_into_sentences( content )
+    content = content.strip()
 
-    description = ""
-    for sentence in sentences:
-        biggerDescription = description + sentence + ". "
-        if len( biggerDescription ) < maxDescriptionLength:
-            description = biggerDescription
-        else:
-            if len( description ) == 0:
-                description = biggerDescription[:maxDescriptionLength]
-            break
-    return description.strip().strip(".").strip()
+    if len(content) <= maxDescriptionLength:
+        return content
+
+    truncatedContent = content[:maxDescriptionLength]
+    lastSplitPoint = find_last_of( truncatedContent, [". ", ".\n", ".\t"] )
+    if lastSplitPoint == -1:
+        lastSplitPoint = find_last_of( truncatedContent, [" ", "\t", "\n"] )
+
+    if lastSplitPoint != -1:
+        truncatedContent = truncatedContent[:lastSplitPoint]
+
+    return truncatedContent.strip().strip(".").strip()

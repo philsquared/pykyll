@@ -8,3 +8,4 @@ Sites are generated from templates, posts (blog posts or articles), and (fixed) 
 ### Templating
 
 We now use Jinga2 for templating.
+˙
