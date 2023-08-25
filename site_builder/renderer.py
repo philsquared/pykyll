@@ -24,5 +24,5 @@ def render_to_file(template_name, filename, rootdir=None, **kwargs ):
         out_file.write(rendered)
 
 def render_to_string(template_as_string, **kwargs ):
-    template = get_templates_env().from_string( template_as_string )
+    template = Environment().from_string( template_as_string )
     return template.render( **kwargs)
