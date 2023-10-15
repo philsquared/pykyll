@@ -21,3 +21,6 @@ class ContentEngine:
 
     @property
     def templates_root(self): return os.path.join(self.sources_root, self.templates_source_subdir)
+
+    def content_path(self, filename: str) -> str:
+        return os.path.join(self.content_source_path, filename)

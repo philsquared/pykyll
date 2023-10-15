@@ -21,12 +21,17 @@ def get_file_modified_time(filename: str):
         return datetime.datetime.fromtimestamp(path.stat().st_mtime)
 
 
+def needs_sync(source_file: str, target_file: str) -> bool:
+    """
+    Checks if target exists and is not older than source
+    - otherwise needs syncing
+    """
+    return not os.path.exists(target_file) or os.path.getmtime(source_file) > os.path.getmtime(target_file)
+
+
 def sync_file(source: str, target: str, always_copy=False) -> bool:
-    if not always_copy and os.path.exists(target):
-        source_mod_time = os.path.getmtime(source)
-        target_mod_time = os.path.getmtime(target)
-        if source_mod_time == target_mod_time:
-            return False
+    if not always_copy and not needs_sync(source, target):
+        return False
 
     ensure_parent_dirs(target)
     shutil.copy2(source, target)
@@ -67,8 +72,8 @@ def path_diff(source_path: str, target_path: str) -> str:
     target_path = os.path.normpath(target_path)
 
     prefix = common_prefix(source_path, target_path)
-    relative_source = source_path[len(prefix):]
-    relative_target = target_path[len(prefix):]
+    relative_source = source_path[len(prefix):].strip("/")
+    relative_target = target_path[len(prefix):].strip("/")
     if relative_source == "":
         parents = 0
     else:

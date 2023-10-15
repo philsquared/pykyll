@@ -47,3 +47,5 @@ def test_path_diff():
     assert path_diff("web/static/css/", "web/static/fonts") == "../fonts"
     assert path_diff("web/static/css/sub", "web/static/fonts") == "../../fonts"
     assert path_diff("web/static/samedir", "web/static/samedir") == ""
+    assert path_diff("web/static", "web/static/fonts") == "fonts"
+    assert path_diff("web/static/css", "web/static") == "../"
