@@ -1,4 +1,5 @@
-from pykyll.utils import ordinal, exhaustive_replace, truncate_text_by_sentence
+from pykyll.fileutils import path_diff
+from pykyll.utils import ordinal, exhaustive_replace, truncate_text_by_sentence, common_prefix
 
 
 def test_ordinals():
@@ -19,6 +20,7 @@ def test_ordinals():
 def test_exhaustive_replace():
     assert exhaustive_replace("abcd", {"b": "a", "d": "c", "c": "b"}) == "aaaa"
 
+
 def test_truncate_text_by_sentence():
     sentences = ["This is a really long sentence", "This is an even longer sentence"]
     text = ". ".join(sentences)
@@ -28,3 +30,20 @@ def test_truncate_text_by_sentence():
     assert truncate_text_by_sentence(text, 40) == sentences[0]
     assert truncate_text_by_sentence(text, 10) == sentences[0]
     assert truncate_text_by_sentence(text, 10, allow_sentence_to_be_cut=True) == "This is a"
+
+
+def test_common_prefix():
+    assert common_prefix("abcdef", "abcxyz") == "abc"
+    assert common_prefix("abc", "abc") == "abc"
+    assert common_prefix("", "") == ""
+    assert common_prefix("abc", "") == ""
+    assert common_prefix("", "abc") == ""
+    assert common_prefix("abcd", "abc") == "abc"
+    assert common_prefix("abc", "abcd") == "abc"
+
+
+def test_path_diff():
+    assert path_diff("web/static/css", "web/static/fonts") == "../fonts"
+    assert path_diff("web/static/css/", "web/static/fonts") == "../fonts"
+    assert path_diff("web/static/css/sub", "web/static/fonts") == "../../fonts"
+    assert path_diff("web/static/samedir", "web/static/samedir") == ""

@@ -31,6 +31,7 @@ def format_longdate(dt: datetime) -> str:
     month_name = calendar.month_name[dt.month]
     return f"{ordinal(dt.day)} {month_name} {dt.year}"
 
+
 def format_time(dt: datetime) -> str:
     return f"{dt.hour:02d}:{dt.minute:02d}"
 
@@ -83,3 +84,14 @@ def truncate_text_by_sentence(text: str, max_length: int, allow_sentence_to_be_c
                 return truncated.strip()
         truncated = truncated.strip() + "\n"
     return truncated.strip()
+
+
+def common_prefix(str1: str, str2: str) -> str:
+    """
+    Finds the longest matching substring at the start of the two supplied strings
+    """
+    common_len = min(len(str1), len(str2))
+    for c in range(0, common_len):
+        if str1[c] != str2[c]:
+            return str1[0:c]
+    return str1[0:common_len]

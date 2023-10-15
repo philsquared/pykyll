@@ -4,3 +4,6 @@ bleach==6.1.0
 beautifulsoup4==4.12.2
 python-dateutil==2.8.2
 html-text==0.5.2
+pyyaml==6.0.1
+fonttools==4.43.1
+brotli==1.1.0 # Needed by fonttools

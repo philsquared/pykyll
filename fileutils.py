@@ -3,6 +3,8 @@ import pathlib
 import datetime
 import shutil
 
+from pykyll.utils import common_prefix
+
 
 def ensure_dirs(dir_name: str):
     if not os.path.exists(dir_name):
@@ -38,7 +40,7 @@ def sync_files(source: str, target: str, always_copy=False, processor=None) -> i
         if os.path.isdir(source_path):
             synced = synced + sync_files(os.path.join(source, file),
                                          os.path.join(target, file),
-                                         always_copy)
+                                         always_copy, processor)
         else:
             target_path = os.path.join(target, file)
             if processor and processor(source_path, target_path):
@@ -54,3 +56,22 @@ def resolve_relative_path(relative_path: str) -> str:
 
 def print_link(relative_path: str):
     print(f"\nfile://{resolve_relative_path(relative_path)}/index.html")
+
+
+def path_diff(source_path: str, target_path: str) -> str:
+    """
+    Finds the relative path between the supplied paths.
+    Paths are normalised first
+    """
+    source_path = os.path.normpath(source_path)
+    target_path = os.path.normpath(target_path)
+
+    prefix = common_prefix(source_path, target_path)
+    relative_source = source_path[len(prefix):]
+    relative_target = target_path[len(prefix):]
+    if relative_source == "":
+        parents = 0
+    else:
+        parents = relative_source.count("/") + 1
+
+    return ("../" * parents) + relative_target
