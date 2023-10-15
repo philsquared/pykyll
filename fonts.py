@@ -45,11 +45,12 @@ class AvailableFonts:
 
         self.fonts = {}
 
-        for font_dir in os.listdir(fonts_dir):
-            font_dir = os.path.join(fonts_dir, font_dir)
-            if os.path.isdir(font_dir):
-                info = FontInfo(font_dir)
-                self.fonts[info.font_family.lower()] = info
+        if os.path.exists(fonts_dir):
+            for font_dir in os.listdir(fonts_dir):
+                font_dir = os.path.join(fonts_dir, font_dir)
+                if os.path.isdir(font_dir):
+                    info = FontInfo(font_dir)
+                    self.fonts[info.font_family.lower()] = info
 
     def find_font(self, font_family: str) -> FontInfo | None:
         return self.fonts.get(font_family.lower())
