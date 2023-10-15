@@ -1,7 +1,7 @@
 import os
 import re
 
-from pykyll.fileutils import path_diff
+from pykyll.fileutils import path_diff, ensure_parent_dirs
 from pykyll.fonts import AvailableFonts
 
 font_re = re.compile(r"\s*font-family\s*:\s*(.*?);")
@@ -34,23 +34,26 @@ class CssProcessor:
                         required_fonts.append(font)
                         self.all_required_fonts.add(font)
 
+        if not required_fonts:
+            return False
+
+        ensure_parent_dirs(target_path)
         with open(target_path, "w") as of:
-            if required_fonts:
-                of.write("/* web fonts */\n")
-                for font in required_fonts:
-                    basename = os.path.join(relative_path_to_fonts, font.slug)
-                    font_lines = [
-                        "@font-face {\n",
-                        f"  font-family: '{font.font_family}';\n",
-                        f"  src: url('{basename}.woff2') format('woff2'),\n",
-                        f"       url('{basename}.woff') format('woff');\n",
-                        f"  font-weight: {font.font_weight};\n",
-                        f"  font-style: {font.font_style};\n"
-                        "}\n"
-                    ]
-                    for line in font_lines:
-                        of.write(line)
-                of.write("/* end of web fonts */\n\n")
+            of.write("/* web fonts */\n")
+            for font in required_fonts:
+                basename = os.path.join(relative_path_to_fonts, font.slug)
+                font_lines = [
+                    "@font-face {\n",
+                    f"  font-family: '{font.font_family}';\n",
+                    f"  src: url('{basename}.woff2') format('woff2'),\n",
+                    f"       url('{basename}.woff') format('woff');\n",
+                    f"  font-weight: {font.font_weight};\n",
+                    f"  font-style: {font.font_style};\n"
+                    "}\n"
+                ]
+                for line in font_lines:
+                    of.write(line)
+            of.write("/* end of web fonts */\n\n")
             for line in lines:
                 of.write(line)
         return True
