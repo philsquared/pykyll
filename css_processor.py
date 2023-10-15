@@ -15,7 +15,7 @@ class CssProcessor:
         self.fonts_target_dir = fonts_target_dir
 
     def process(self, source_path: str, target_path: str) -> bool:
-        required_fonts = []
+        required_fonts = set()
         _, ext = os.path.splitext(source_path)
         if ext != ".css":
             return False
@@ -31,7 +31,7 @@ class CssProcessor:
                 for font_family in fonts:
                     font = self.available_fonts.find_font(font_family)
                     if font:
-                        required_fonts.append(font)
+                        required_fonts.add(font)
                         self.all_required_fonts.add(font)
 
         if not required_fonts:
