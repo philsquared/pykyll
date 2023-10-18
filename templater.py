@@ -6,6 +6,12 @@ from .site import Site
 from .fileutils import ensure_parent_dirs
 
 
+class RelEnvironment(Environment):
+    """Override join_path() to enable relative template paths, collapsing .. dirs."""
+    def join_path(self, template, parent):
+        return os.path.normpath(os.path.join(os.path.dirname(parent), template))
+
+
 class Templater:
     def __init__(
             self, site: Site,
@@ -21,9 +27,9 @@ class Templater:
         """
         Renders the named template and returns the rendered string
         """
-        loader = FileSystemLoader(directory)
-        env = Environment(loader=loader)
-        template = env.get_template(template_name)
+        loader = FileSystemLoader(".")
+        env = RelEnvironment(loader=loader)
+        template = env.get_template(os.path.join(directory, template_name))
         return template.render(**kwargs)
 
     @staticmethod

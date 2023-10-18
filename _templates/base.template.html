@@ -1,0 +1,40 @@
+<html itemscope lang="en" xml:lang="en">
+<head>
+    <meta charset=utf-8>
+	<meta name="robots" content="index, follow">
+    <meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
+    <meta name=author content="{{ site.author }}">
+    <meta name=description content="{% block description %}{{ page_summary }}{% endblock %}">
+    <meta property="og:title" content="{% block title %}{{ site.name }}{% endblock %}">
+    <meta property="og:image" content="{% block page_image %}{{ site.public_url }}/{{ site.static_target_subdir }}/{{ site.image }}{% endblock %}">
+    <meta name=twitter:title content="{{ self.title() }}">
+    <meta itemprop=name content="{{ self.title() }}">
+    <meta property="og:description" content="{{ self.description() }}">
+    <meta name=twitter:description content="{{ self.description() }}">
+    <meta name=twitter:image content="{{ self.page_image() }}">
+    <meta itemprop=description content="{{ self.description() }}">
+    <meta property="og:type" content="website">
+    <meta name="keywords" content="{{ site.keywords }}" />
+    <title>{{ self.title() }}</title>
+    <link rel=canonical href="{{ canonical_url }}">{% if site.is_local_build %}
+    <script>
+        window.onload = function() {
+            // Convert all directory links to index.html links
+            let anchors = document.getElementsByTagName('a')
+
+            for (var i = 0; i < anchors.length; ++i) {
+                let a = anchors[i]
+                if (a.href.startsWith("file://") && a.href.endsWith("/")) {
+                    console.log("Rewriting " + a.href)
+                    a.href = a.href + "index.html"
+                    console.log("  ... to " + a.href)
+                }
+            }
+        }
+    </script>{% endif %}
+    {% block head %}{% endblock %}
+</head>
+<body>
+{% block body %}{% endblock %}
+</body>
+</html>
