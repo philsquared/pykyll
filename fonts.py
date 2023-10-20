@@ -33,15 +33,18 @@ class FontInfo:
                     raise Exception(f"Unrecognised file type, {filename} in font directory {font_dir}")
         if not self.otf_file:
             raise Exception(f"No otf file found in {font_dir}")
-        if not info_file:
-            raise Exception(f"No info.yml file found in {font_dir}")
+        if info_file:
+            with open(os.path.join(font_dir, info_file), 'r') as f:
+                data = yaml.safe_load(f)
 
-        with open(os.path.join(font_dir, info_file), 'r') as f:
-            data = yaml.safe_load(f)
+            self.font_family = data["font-family"]
+            self.font_weight = data["font-weight"]
+            self.font_style = data["font-style"]
+        else:
+            self.font_family = os.path.split(font_dir)[-1]
+            self.font_weight = "normal"
+            self.font_style = "normal"
 
-        self.font_family = data["font-family"]
-        self.font_weight = data["font-weight"]
-        self.font_style = data["font-style"]
         self.slug = slugify(self.font_family)
 
 
