@@ -43,10 +43,10 @@ class Templater:
     def render_to_string(
             self,
             template_name: str,
-            levels: int,
+            levels: int = 0,
             canonical_url: str | None = None,
             page_summary: str | None = None,
-            **kwargs):
+            **kwargs) -> str:
         """
         Renders the named template to a string, enriching with additional args.
         The page_summary is used as the description of the page for unfurling links. If missing it uses the default
