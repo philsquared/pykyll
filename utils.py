@@ -1,5 +1,7 @@
-from datetime import datetime
 import calendar
+import copy
+from datetime import datetime
+from collections.abc import Mapping
 
 
 def empty_or_null(string: str):
@@ -17,6 +19,26 @@ def map_element(data: dict, element_name: str, fun):
 
 def join(items: list, seperator: str, last_seperator: str):
     return last_seperator.join(filter(None, [seperator.join(items[:-1])] + items[-1:]))
+
+
+def dict_merge(d1: Mapping, d2: Mapping) -> dict:
+    """
+    Performs a "deep merge" of two dictionaries.
+    Any values in the 2nd dict overwrite values for the same key in the 1st
+    - unless you are both dictionaries, in which case the process recurses into them
+    """
+    if not d1:
+        return d2
+    if not d2:
+        return d1
+    merged = dict(copy.deepcopy(d1))
+    for k, v in d2.items():
+        if k in d1 and isinstance(v, Mapping):
+            v1 = d1[k]
+            if isinstance(v1, Mapping):
+                v = dict_merge(v1, v)
+        merged[k] = v
+    return merged
 
 
 def ordinal(n: int) -> str:

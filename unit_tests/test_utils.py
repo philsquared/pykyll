@@ -1,5 +1,5 @@
 from pykyll.fileutils import path_diff
-from pykyll.utils import ordinal, exhaustive_replace, truncate_text_by_sentence, common_prefix
+from pykyll.utils import ordinal, exhaustive_replace, truncate_text_by_sentence, common_prefix, dict_merge
 
 
 def test_ordinals():
@@ -49,3 +49,68 @@ def test_path_diff():
     assert path_diff("web/static/samedir", "web/static/samedir") == ""
     assert path_diff("web/static", "web/static/fonts") == "fonts"
     assert path_diff("web/static/css", "web/static") == "../"
+
+
+def test_dict_merge():
+    d1 = {
+        "one": 42,
+        "two": 7,
+        "three": {
+            "inner1": "hello",
+            "array": [1, 2, 3, 4]
+        }
+    }
+    d2 = {
+        "two": 100,
+        "three": {
+            "array": [1, 1, 2, 3, 5],
+            "new_key": 99
+        },
+        "other": "value"
+    }
+
+    d1_2 = {
+        "one": 42,
+        "two": 100,
+        "three": {
+            "inner1": "hello",
+            "array": [1, 1, 2, 3, 5],
+            "new_key": 99
+        },
+        "other": "value"
+    }
+    d3 = {
+        "three": {
+            "four": {
+                "key": "value"
+            }
+        }
+    }
+    d1_3 = {
+        "one": 42,
+        "two": 7,
+        "three": {
+            "inner1": "hello",
+            "array": [1, 2, 3, 4],
+            "four": {
+                "key": "value"
+            }
+        }
+    }
+    d2_3 = {
+        "two": 100,
+        "three": {
+            "array": [1, 1, 2, 3, 5],
+            "new_key": 99,
+            "four": {
+                "key": "value"
+            }
+        },
+        "other": "value"
+    }
+
+    assert dict_merge(d1, {}) == d1
+    assert dict_merge({}, d2) == d2
+    assert dict_merge(d1, d2) == d1_2
+    assert dict_merge(d1, d3) == d1_3
+    assert dict_merge(d2, d3) == d2_3
