@@ -5,6 +5,7 @@ from pykyll.fileutils import path_diff, ensure_parent_dirs
 from pykyll.fonts import AvailableFonts
 
 font_re = re.compile(r"\s*font-family\s*:\s*(.*?);")
+font_var_re = re.compile(r"\s*--.*?font\s*:\s*(.*?);")
 
 
 class CssProcessor:
@@ -26,6 +27,9 @@ class CssProcessor:
             lines = f.readlines()
         for line in lines:
             match = font_re.match(line)
+            if not match:
+                match = font_var_re.match(line)
+
             if match:
                 fonts = [f.strip().strip("'").strip('"') for f in match.group(1).split(",")]
                 for font_family in fonts:

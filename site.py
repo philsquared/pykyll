@@ -11,9 +11,9 @@ class Site:
     image: str  # Default image associated with each page (can be overridden)
     keywords: str
     author: str
-    output_dir = "web"  # Where the site files should be generated to
-    static_target_subdir = "static"
-    posts_subdir = "posts"  # Sub-directory where blog/ news/ journal posts should be generated to
+    output_dir: str = "web"  # Where the site files should be generated to
+    static_target_subdir: str = "static"
+    posts_subdir: str = "posts"  # Sub-directory where blog/ news/ journal posts should be generated to
     favicon_svg: str | None = None
     favicon_png: str | None = None
     is_local_build = os.environ.get("is_local_build") == "1"
