@@ -5,6 +5,7 @@ from dataclasses import dataclass
 @dataclass
 class ContentEngine:
     sources_root: str = "."
+    instance_root: str = os.path.realpath(sources_root)
     static_source_subdir: str = "_static"
     content_source_subdir: str = "_content"
     templates_source_subdir: str = "_templates"
