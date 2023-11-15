@@ -15,9 +15,11 @@ class RelEnvironment(Environment):
 class Templater:
     def __init__(
             self, site: Site,
-            templates_root="_templates"):
+            templates_root: str,
+            email_templates_root: str | None = None):
         self.site = site
         self.templates_root = templates_root
+        self.email_templates_root = email_templates_root
 
     @staticmethod
     def render_from_template(
@@ -95,3 +97,12 @@ class Templater:
         ensure_parent_dirs(path)
         with open(path, 'w') as out_file:
             out_file.write(rendered)
+
+    def render_email(self, template_name, **kwargs):
+        if not self.email_templates_root:
+            raise Exception("Templater renderer not configured for email")
+        return Templater.render_from_template(
+            self.email_templates_root,
+            template_name,
+            site=self.site,
+            **kwargs)
