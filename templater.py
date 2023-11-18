@@ -35,12 +35,27 @@ class Templater:
         return template.render(**kwargs)
 
     @staticmethod
-    def render_from_string(template_as_string: str, **kwargs) -> str:
+    def render_from_string_raw(template_as_string: str, **kwargs) -> str:
         """
         Renders a template provided as a string and returns the rendered string
         """
         template = Environment().from_string(template_as_string)
         return template.render(**kwargs)
+
+    def render_from_string(self, template_as_string: str, levels: int = 0, **kwargs) -> str:
+        """
+        Renders a template provided as a string and returns the rendered string.
+        Also passed in to the template are rootdir, static_root (off rootdir), canonical_url and site, as well as
+        any additional kwargs, passed.
+        """
+        rootdir = "../" * levels
+        static_root = os.path.join(rootdir, self.site.static_target_subdir)
+        template = Environment().from_string(template_as_string)
+        return template.render(
+            rootdir=rootdir,
+            static_root=static_root,
+            site=self.site,
+            **kwargs)
 
     def render_to_string(
             self,
