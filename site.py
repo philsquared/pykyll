@@ -1,5 +1,5 @@
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -17,6 +17,7 @@ class Site:
     favicon_svg: str | None = None
     favicon_png: str | None = None
     is_local_build = os.environ.get("is_local_build") == "1"
+    menu: {str: str} = field(default_factory=dict)
 
     @property
     def static_target_path(self): return os.path.join(self.output_dir, self.static_target_subdir)
