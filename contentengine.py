@@ -1,5 +1,6 @@
 import os
 from dataclasses import dataclass
+from datetime import datetime
 
 
 @dataclass
@@ -33,3 +34,16 @@ class ContentEngine:
 
     def content_path(self, filename: str) -> str:
         return os.path.join(self.content_source_path, filename)
+
+
+def promote_draft(filename: str, ce: ContentEngine):
+    now = datetime.now()
+    dated_filename = "{:0>4}-{:0>2}-{:0>2}T{:0>2}-{:0>2}.md".format(now.year, now.month, now.day, now.hour, now.minute)
+    src = filename
+    dst = os.path.join(ce.posts_source_path, dated_filename)
+    print(f"Promoting `{src}` to `{dst}`")
+
+    if not os.path.exists(src):
+        raise Exception(f"{src} does not exist")
+
+    os.rename(src, dst)
