@@ -19,6 +19,13 @@ close_script_parser = re.compile(r'(.*)</script>.*', re.DOTALL)
 html_title_parser = re.compile(r'.*?<h1>(.*?)</h1>.*', re.DOTALL)
 md_title_parser = re.compile(r'.*?#(.*)', re.DOTALL)
 
+use_html_extension: bool = True
+
+
+def set_use_html_extension(use: bool):
+    global  use_html_extension
+    use_html_extension = use
+
 
 @dataclass
 class PostMetadata:
@@ -44,7 +51,11 @@ class PostMetadata:
     def rss_formatted_timestamp(self): return format_datetime_for_rss(self.timestamp)
 
     @property
-    def page_name(self): return f"{self.slug}.html"
+    def page_name(self):
+        if use_html_extension:
+            return f"{self.slug}.html"
+        else:
+            return self.slug
 
     @property
     def public_url(self): return f"{self.base_url}/{self.page_name}"
