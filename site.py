@@ -16,7 +16,7 @@ class Site:
     posts_subdir: str = "posts"  # Sub-directory where blog/ news/ journal posts should be generated to
     favicon_svg: str | None = None
     favicon_png: str | None = None
-    is_local_build = os.environ.get("is_local_build") == "1"
+    is_local_build = os.environ.get("is_local_build") == "1" or os.environ.get("FLASK_ENV") == "development"
     menu: {str: str} = field(default_factory=dict)
 
     @property
