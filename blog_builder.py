@@ -12,7 +12,8 @@ import typing
 
 from pykyll.html import slugify, make_description
 from pykyll.markdown import render_markdown
-from pykyll.utils import truncate_text_by_sentence, format_datetime_for_blog, format_datetime_for_rss
+from pykyll.utils import format_datetime_for_blog, format_datetime_for_rss
+
 
 open_script_parser = re.compile(r'.*?<script.*?>(.*)', re.DOTALL)
 close_script_parser = re.compile(r'(.*)</script>.*', re.DOTALL)

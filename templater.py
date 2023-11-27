@@ -31,7 +31,8 @@ class Templater:
         """
         loader = FileSystemLoader(".")
         env = RelEnvironment(loader=loader)
-        template = env.get_template(os.path.join(directory, template_name))
+        template_path = os.path.normpath(os.path.join(directory, template_name))
+        template = env.get_template(template_path)
         return template.render(**kwargs)
 
     @staticmethod
@@ -42,13 +43,14 @@ class Templater:
         template = Environment().from_string(template_as_string)
         return template.render(**kwargs)
 
-    def render_from_string(self, template_as_string: str, levels: int = 0, **kwargs) -> str:
+    def render_from_string(self, template_as_string: str, levels: int = 0, rootdir=None, **kwargs) -> str:
         """
         Renders a template provided as a string and returns the rendered string.
         Also passed in to the template are rootdir, static_root (off rootdir), canonical_url and site, as well as
         any additional kwargs, passed.
         """
-        rootdir = "../" * levels
+        if rootdir is None:
+            rootdir = "../" * levels
         static_root = os.path.join(rootdir, self.site.static_target_subdir)
         template = Environment().from_string(template_as_string)
         return template.render(

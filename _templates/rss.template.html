@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:wfw="http://wellformedweb.org/CommentAPI/" xmlns:dc="http://purl.org/dc/elements/1.1/" version="2.0">
+	<channel>
+		<title>{{ site.name }}</title>
+		<link>{{ site.public_url }}</link>
+		<description></description>
+		<lastBuildDate>{{ last_build_date}}</lastBuildDate>
+		<copyright></copyright>
+		<language>en-GB</language>
+		<generator>Pykyll - the static blog template engine</generator>
+
+        {% for metadata, html in post_data %}
+        <item>
+            <title>{{ metadata.title }}</title>
+            {% if metadata.tags %}{% for tag in metadata.tags %}
+            <category>{{ tag }}</category>
+            {% endfor %}{% endif %}
+            <dc:creator>{{ site.author }}</dc:creator>
+                <pubDate>{{ metadata.rss_formatted_timestamp}}</pubDate>
+                <link>{{ metadata.public_url }}</link>
+                <guid isPermaLink="false">{{ metadata.guid }}</guid>
+            <description>
+<![CDATA[
+{{ html | safe }}
+]]>
+            </description>
+        </item>
+        {% endfor %}
+
+	</channel>
+</rss>
