@@ -50,6 +50,9 @@ def ordinal(n: int) -> str:
 
 
 def format_longdate(dt: datetime) -> str:
+    """
+    formats a date as, e.g. 1st May 2022
+    """
     month_name = calendar.month_name[dt.month]
     return f"{ordinal(dt.day)} {month_name} {dt.year}"
 
