@@ -10,18 +10,33 @@ allowed_tags = ['abbr', 'acronym', 'b', 'blockquote', 'code',
 allowed_tags_with_links = allowed_tags + ['a']
 
 
-def render_markdown(text: str, linkify=False, clean=False, strip_outer_p_tag=False) -> str:
+def render_markdown(
+        text: str,
+        linkify=False,
+        clean=False,
+        strip_outer_p_tag=False,
+        embedded_code=True,
+        remove_elements: [str] = []) -> str:
     if not text:
         return ""
 
-    if linkify:
-        tags = allowed_tags_with_links
+    if embedded_code:
+        html = markdown.markdown(text, extensions=['fenced_code'], output_format='html')
     else:
-        tags = allowed_tags
-    html = markdown.markdown(text, extensions=['fenced_code'], output_format='html')
+        html = markdown.markdown(text, output_format='html')
     if strip_outer_p_tag:
         html = strip_p_tag(html)
     if clean:
+        if linkify:
+            tags = allowed_tags_with_links
+        else:
+            tags = allowed_tags
+
+        if remove_elements:
+            tags = tags.copy()
+            for e in remove_elements:
+                tags.remove(e)
+
         html = bleach.clean(html, tags=tags)
     if linkify:
         return bleach.linkify(html)
