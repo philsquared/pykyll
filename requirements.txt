@@ -7,3 +7,4 @@ html-text==0.5.2
 pyyaml==6.0.1
 fonttools==4.43.1
 brotli==1.1.0 # Needed by fonttools
+libsass==0.22.0
