@@ -32,6 +32,9 @@ class Templater:
         loader = FileSystemLoader(".")
         env = RelEnvironment(loader=loader)
         template_path = os.path.normpath(os.path.join(directory, template_name))
+        wd = os.getcwd()
+        if template_path.startswith(wd):
+            template_path = template_path[len(wd)+1:]
         template = env.get_template(template_path)
         return template.render(**kwargs)
 
