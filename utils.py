@@ -120,3 +120,25 @@ def common_prefix(str1: str, str2: str) -> str:
         if str1[c] != str2[c]:
             return str1[0:c]
     return str1[0:common_len]
+
+
+def common_suffix(range1: str | list, range2: str | list) -> str:
+    """
+    Finds the longest matching sub-range at the end of the two supplied strings or lists
+    """
+    if type(range1) is str:
+        default_value = ""
+    else:
+        default_value = []
+
+    common_len = min(len(range1), len(range2))
+    if common_len == 0:
+        return default_value
+    for c in range(1, common_len+1):
+        if range1[-c] != range2[-c]:
+            if c == 1:
+                return default_value
+            else:
+                return range1[-(c - 1):]
+    return range1[-common_len:]
+

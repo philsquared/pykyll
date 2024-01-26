@@ -1,5 +1,6 @@
 from pykyll.fileutils import path_diff
-from pykyll.utils import ordinal, exhaustive_replace, truncate_text_by_sentence, common_prefix, dict_merge
+from pykyll.utils import ordinal, exhaustive_replace, truncate_text_by_sentence, common_prefix, dict_merge, \
+    common_suffix
 
 
 def test_ordinals():
@@ -40,6 +41,17 @@ def test_common_prefix():
     assert common_prefix("", "abc") == ""
     assert common_prefix("abcd", "abc") == "abc"
     assert common_prefix("abc", "abcd") == "abc"
+
+def test_common_suffix():
+    assert common_suffix("", "") == ""
+    assert common_suffix("abc", "") == ""
+    assert common_suffix("", "xyz") == ""
+    assert common_suffix("abc", "xyz") == ""
+    assert common_suffix("abc", "abc") == "abc"
+    assert common_suffix("xyzabc", "ijkabc") == "abc"
+    assert common_suffix("xyzabc", "abc") == "abc"
+    assert common_suffix("abc", "1abc") == "abc"
+    assert common_suffix("abc", "xbc") == "bc"
 
 
 def test_path_diff():
