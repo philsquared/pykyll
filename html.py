@@ -46,7 +46,8 @@ url_replacements = {
     "(": "",
     ")": "",
     "c#": "csharp",
-    "f#": "fsharp"}
+    "f#": "fsharp",
+    '#': ""}
 
 
 def slugify(text: str) -> str:
