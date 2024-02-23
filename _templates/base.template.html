@@ -6,7 +6,7 @@
     <meta name=author content="{{ site.author }}">
     <meta name=description content="{% block description %}{{ page_summary }}{% endblock %}">
     <meta property="og:title" content="{% block title %}{{ site.name }}{% endblock %}">
-    <meta property="og:image" content="{% block page_image %}{{ site.public_url }}/{{ site.static_target_subdir }}/{{ site.image }}{% endblock %}">
+    <meta property="og:image" content="{% block page_image %}{% if page_image %}{{ page_image }}{% else %}{{ site.public_url }}/{{ site.static_target_subdir }}/{{ site.image }}{% endif %}{% endblock %}">
     <meta name=twitter:title content="{{ self.title() }}">
     <meta itemprop=name content="{{ self.title() }}">
     <meta property="og:description" content="{{ self.description() }}">

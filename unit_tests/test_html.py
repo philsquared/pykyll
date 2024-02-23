@@ -1,4 +1,4 @@
-from pykyll.html import strip_tag, strip_p_tag, slugify, make_description
+from pykyll.html import strip_tag, strip_p_tag, slugify, make_description, find_image_with_class
 
 
 def test_strip_tags():
@@ -56,3 +56,13 @@ def test_make_description_truncated():
     assert make_description(text, max_length=62) == "This is a really long sentence"
     assert make_description(text, max_length=40) == "This is a really long sentence"
     assert make_description(text, max_length=10) == "This is a"
+
+
+def test_image_parser():
+    assert find_image_with_class('<img src="xyz.jpg">', "abc") == None
+    assert find_image_with_class('<img class="abc" src="xyz.jpg">', "abc") == "xyz.jpg"
+    assert find_image_with_class('<img src="xyz.jpg" class="abc">', "abc") == "xyz.jpg"
+    assert find_image_with_class('<img  src="xyz.jpg"   class="abc" >', "abc") == "xyz.jpg"
+    assert find_image_with_class('<img  src = "xyz.jpg" alt="hello"  class = "abc" >', "abc") == "xyz.jpg"
+
+    assert find_image_with_class('<img src="xyz.jpg" class="abc">\n<img src="ijk.png" class="abc">', "abc") == "xyz.jpg"

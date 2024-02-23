@@ -1,6 +1,10 @@
 from pykyll.utils import exhaustive_replace, truncate_text_by_sentence
-from bs4 import BeautifulSoup
+import re
 import html_text
+
+img_parser = re.compile(r'.*?<img (.*?)\s*class\s*=\s*\"(.*?)\"(.*?)>.*', re.DOTALL)
+img_src_parser = re.compile(r'.*?src\s*=\s*\"(.*?)\".*', re.DOTALL)
+
 
 def strip_tag(html: str, tag_name: str) -> str:
     """
@@ -87,3 +91,15 @@ def make_description(html: str, attribute_safe=True, allow_sentence_to_be_cut=Tr
         return "\n".join(f"<p>{line}</p>" for line in lines)
     else:
         return truncated
+
+
+def find_image_with_class(html: str, class_name: str) -> str | None:
+    """
+    Finds an image file within an img tag with a given class name
+    """
+    for img_match in img_parser.finditer(html):
+        if img_match.group(2) == class_name:
+            img_attrs = img_match.group(1) + " " + img_match.group(3)
+            if m := img_src_parser.match(img_attrs):
+                return m.group(1)
+    return None
