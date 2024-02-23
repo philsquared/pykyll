@@ -68,6 +68,7 @@ class Templater:
             levels: int = 0,
             canonical_url: str | None = None,
             page_summary: str | None = None,
+            rootdir=None,
             **kwargs) -> str:
         """
         Renders the named template to a string, enriching with additional args.
@@ -76,7 +77,8 @@ class Templater:
         Also passed in to the template are rootdir, static_root (off rootdir), canonical_url and site, as well as
         any additional kwargs, passed.
         """
-        rootdir = "../" * levels
+        if rootdir is None:
+            rootdir = "../" * levels
         static_root = os.path.join(rootdir, self.site.static_target_subdir)
         if canonical_url and canonical_url.endswith("/index.html"):
             canonical_url = canonical_url[:-11]
