@@ -7,10 +7,12 @@ import re
 import uuid
 from dataclasses import dataclass
 from datetime import datetime
+from functools import cached_property
+
 import dateutil.parser
 import typing
 
-from pykyll.html import slugify, make_description
+from pykyll.html import slugify, make_description, find_image_with_class
 from pykyll.markdown import render_markdown
 from pykyll.utils import format_datetime_for_blog, format_datetime_for_rss
 
@@ -176,13 +178,17 @@ class Post:
             self.metadata.hash = hash
             self.metadata.is_dirty = True
 
-    @property
+    @cached_property
     def summary(self):
         return make_description(self.html_content, attribute_safe=False, wrap_in_p_tags=True, max_length=600)
 
-    @property
+    @cached_property
     def description(self):
         return make_description(self.html_content, max_length=300)
+
+    @cached_property
+    def page_image(self):
+        return find_image_with_class(self.html_content, "post-image")
 
     def write(self, out_file: typing.TextIO):
         out_file.write('<script type="application/json">\n')
