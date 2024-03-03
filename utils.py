@@ -25,7 +25,7 @@ def dict_merge(d1: Mapping, d2: Mapping) -> dict:
     """
     Performs a "deep merge" of two dictionaries.
     Any values in the 2nd dict overwrite values for the same key in the 1st
-    - unless you are both dictionaries, in which case the process recurses into them
+    - unless they are both dictionaries, in which case the process recurses into them
     """
     if not d1:
         return d2
