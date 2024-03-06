@@ -5,7 +5,7 @@
     <meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no">
     <meta name=author content="{{ site.author }}">
     <meta name=description content="{% block description %}{{ page_summary }}{% endblock %}">
-    <meta property="og:title" content="{% block title %}{{ site.name }}{% endblock %}">
+    <meta property="og:title" content="{% block title %}{% if page_title %}{{ page_title }}{% else %}{{ site.name }}{% if title %} : {{ title }}{% endif %}{% endif %}{% endblock %}">
     <meta property="og:image" content="{% block page_image %}{% if page_image %}{{ page_image }}{% else %}{{ site.public_url }}/{{ site.static_target_subdir }}/{{ site.image }}{% endif %}{% endblock %}">
     <meta name=twitter:title content="{{ self.title() }}">
     <meta itemprop=name content="{{ self.title() }}">
