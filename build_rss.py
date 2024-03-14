@@ -18,4 +18,5 @@ def build_rss(templater: Templater,
         template_name,
         rss_filename,
         post_data=post_data,
-        last_build_date=last_build_date)
+        last_build_date=last_build_date,
+        rootdir="/")
