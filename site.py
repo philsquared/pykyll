@@ -18,6 +18,7 @@ class Site:
     favicon_png: str | None = None
     is_local_build = os.environ.get("is_local_build") == "1" or os.environ.get("FLASK_ENV") == "development"
     menu: {str: str} = field(default_factory=dict)
+    short_menu: {str: str} = field(default_factory=dict)
 
     @property
     def static_target_path(self): return os.path.join(self.output_dir, self.static_target_subdir)
