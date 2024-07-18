@@ -85,6 +85,11 @@ class Templater:
         if page_summary is None:
             page_summary = self.site.default_page_summary
 
+        if "menu" not in kwargs:
+            kwargs["menu"] = self.site.menu
+        if "right_menu" not in kwargs:
+            kwargs["right_menu"] = self.site.right_menu
+
         return Templater.render_from_template(
             self.templates_root,
             template_name,
