@@ -1,6 +1,29 @@
 import os
 from dataclasses import dataclass, field
 
+@dataclass
+class MenuItem:
+    title: str
+    link: str
+
+
+class Menu:
+    def __init__(self, left: list | None = None, right : list | None = None):
+        self.left = []
+        self.right = []
+        if left:
+            for item in left:
+                if isinstance(item, MenuItem):
+                    self.left.append(item)
+                else:
+                    self.left.append(MenuItem(item[0], item[1]))
+        if right:
+            for item in right:
+                if isinstance(item, MenuItem):
+                    self.right.append(item)
+                else:
+                    self.right.append(MenuItem(item[0], item[1]))
+
 
 @dataclass
 class Site:
@@ -17,8 +40,7 @@ class Site:
     favicon_svg: str | None = None
     favicon_png: str | None = None
     is_local_build = os.environ.get("is_local_build") == "1" or os.environ.get("FLASK_ENV") == "development"
-    menu: {str: str} = field(default_factory=dict)
-    right_menu: {str: str} = field(default_factory=dict)
+    menu: Menu = Menu()
 
     @property
     def static_target_path(self): return os.path.join(self.output_dir, self.static_target_subdir)

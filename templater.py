@@ -87,8 +87,6 @@ class Templater:
 
         if "menu" not in kwargs:
             kwargs["menu"] = self.site.menu
-        if "right_menu" not in kwargs:
-            kwargs["right_menu"] = self.site.right_menu
 
         return Templater.render_from_template(
             self.templates_root,
