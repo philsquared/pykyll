@@ -24,6 +24,10 @@ class CssProcessor:
             case ".css":
                 return self.process_css(source_path, target_path)
             case ".scss":
+                filename = os.path.basename(source_path)
+                if filename.startswith("_"):
+                    # This is a partial file (to be imported) so shouldn't be synced
+                    return True
                 return self.process_scss(source_path, f"{path_without_ext}.css")
             case _:
                 return False
@@ -85,10 +89,7 @@ class CssProcessor:
             self.available_fonts.sync_font(font, self.fonts_target_dir)
 
     def process_scss(self, source_path: str, target_path: str) -> bool:
-        with open(source_path, "r") as f:
-            scss = f.read()
-
-        css = sass.compile(string=scss)
+        css = sass.compile(filename=source_path)
         lines = css.split("\n")
         processed_lines = self.process_css_lines(lines, target_path)
         if processed_lines:
