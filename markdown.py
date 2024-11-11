@@ -10,6 +10,15 @@ allowed_tags = ['abbr', 'acronym', 'b', 'blockquote', 'code',
 allowed_tags_with_links = allowed_tags + ['a']
 
 
+def clean_for_attribute(text: str) -> str:
+    return bleach.clean(text, tags=allowed_tags)
+
+
+def clean_for_block(text: str) -> str:
+    html = bleach.clean(text, tags=allowed_tags_with_links)
+    return bleach.linkify(html)
+
+
 def render_markdown(
         text: str,
         linkify=False,

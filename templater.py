@@ -1,15 +1,43 @@
 import os
 
+from bleach import linkify
 from jinja2 import FileSystemLoader, Environment
 
+from .markdown import render_markdown, clean_for_attribute, clean_for_block
 from .site import Site
 from .fileutils import ensure_parent_dirs
+
+
+def markdown_filter(markdown: str) -> str:
+    return render_markdown(markdown, linkify=True, clean=True, strip_outer_p_tag=True)
+
+
+def add_filters(env: Environment):
+    env.filters["markdown"] = markdown_filter
+    env.filters["clean_for_attribute"] = clean_for_attribute
+    env.filters["clean_for_block"] = clean_for_block
 
 
 class RelEnvironment(Environment):
     """Override join_path() to enable relative template paths, collapsing .. dirs."""
     def join_path(self, template, parent):
         return os.path.normpath(os.path.join(os.path.dirname(parent), template))
+
+
+def get_string_based_environment() -> Environment:
+    env = Environment(trim_blocks=True,
+                      lstrip_blocks=True)
+    add_filters(env)
+    return env
+
+
+def get_file_based_environment() -> Environment:
+    loader = FileSystemLoader(".")
+    env = RelEnvironment(loader=loader,
+                         trim_blocks=True,
+                         lstrip_blocks=True)
+    add_filters(env)
+    return env
 
 
 class Templater:
@@ -29,8 +57,7 @@ class Templater:
         """
         Renders the named template and returns the rendered string
         """
-        loader = FileSystemLoader(".")
-        env = RelEnvironment(loader=loader)
+        env = get_file_based_environment()
         template_path = os.path.normpath(os.path.join(directory, template_name))
         wd = os.getcwd()
         if template_path.startswith(wd):
@@ -43,7 +70,7 @@ class Templater:
         """
         Renders a template provided as a string and returns the rendered string
         """
-        template = Environment().from_string(template_as_string)
+        template = get_string_based_environment().from_string(template_as_string)
         return template.render(**kwargs)
 
     def render_from_string(self, template_as_string: str, levels: int = 0, rootdir=None, **kwargs) -> str:
@@ -55,7 +82,7 @@ class Templater:
         if rootdir is None:
             rootdir = "../" * levels
         static_root = os.path.join(rootdir, self.site.static_target_subdir)
-        template = Environment().from_string(template_as_string)
+        template = get_string_based_environment().from_string(template_as_string)
         return template.render(
             rootdir=rootdir,
             static_root=static_root,
