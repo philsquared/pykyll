@@ -1,6 +1,5 @@
 import os
 
-from bleach import linkify
 from jinja2 import FileSystemLoader, Environment
 
 from .markdown import render_markdown, clean_for_attribute, clean_for_block
