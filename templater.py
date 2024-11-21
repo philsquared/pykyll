@@ -17,6 +17,14 @@ def add_filters(env: Environment):
     env.filters["clean_for_block"] = clean_for_block
 
 
+def get_level(filename: str) -> str:
+    dirname = os.path.dirname(filename)
+    if dirname == "":
+        return 0
+    else:
+        return len(dirname.split("/"))
+
+
 class RelEnvironment(Environment):
     """Override join_path() to enable relative template paths, collapsing .. dirs."""
     def join_path(self, template, parent):
@@ -137,11 +145,7 @@ class Templater:
         Also passed in to the template are rootdir, static_root (off rootdir), canonical_url and site, as well as
         any additional kwargs, passed.
         """
-        dirname = os.path.dirname(filename)
-        if dirname == "":
-            levels = 0
-        else:
-            levels = len(dirname.split("/"))
+        levels = get_level(filename)
         canonical_url = os.path.join(self.site.public_url, filename)
         rendered = self.render_to_string(template_name, levels, canonical_url, page_summary, **kwargs)
         path = os.path.join(self.site.output_dir, filename)
