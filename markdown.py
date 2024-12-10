@@ -11,10 +11,14 @@ allowed_tags_with_links = allowed_tags + ['a']
 
 
 def clean_for_attribute(text: str) -> str:
+    if not text:
+        return ""
     return bleach.clean(text, tags=allowed_tags).replace('"', "&quot;").replace("'", "&apos;")
 
 
 def clean_for_block(text: str) -> str:
+    if not text:
+        return ""
     html = bleach.clean(text, tags=allowed_tags_with_links)
     return bleach.linkify(html)
 
