@@ -1,20 +1,63 @@
 import os
+import typing as t
 
-from jinja2 import FileSystemLoader, Environment
+import bleach
+from jinja2 import FileSystemLoader, Environment, nodes, TemplateAssertionError
+from jinja2.ext import Extension
+from jinja2.nodes import CallBlock, Const
 
-from .markdown import render_markdown, clean_for_attribute, clean_for_block
+from .allowed_tags import allowed_tags, allowed_tags_with_links
+from .markdown import render_markdown
 from .site import Site
 from .fileutils import ensure_parent_dirs
+
+
+class TemplateError(TemplateAssertionError):
+    pass
+
+
+class ErrorExtension(Extension):
+    tags = frozenset(['error'])
+
+    def parse(self, parser):
+        tag = next(parser.stream)
+        message = parser.parse_expression()
+        node = CallBlock(
+            self.call_method('_exec_raise', [message, Const(tag.lineno), Const(parser.filename)]),
+            [], [], [])
+        node.set_lineno(tag.lineno)
+        return node
+
+    def _exec_raise(self, message, lineno, filename, caller):
+        raise TemplateError(message, lineno=lineno, filename=filename)
 
 
 def markdown_filter(markdown: str) -> str:
     return render_markdown(markdown, linkify=True, clean=True, strip_outer_p_tag=True)
 
 
+def clean_for_attribute(text: str) -> str:
+    if not text:
+        return ""
+    return bleach.clean(text, tags=allowed_tags).replace('"', "&quot;").replace("'", "&apos;")
+
+
+def clean_for_block(text: str) -> str:
+    if not text:
+        return ""
+    html = bleach.clean(text, tags=allowed_tags_with_links)
+    return bleach.linkify(html)
+
+
+def template_error(text: str) -> str:
+    raise TemplateError(text)
+
+
 def add_filters(env: Environment):
     env.filters["markdown"] = markdown_filter
     env.filters["clean_for_attribute"] = clean_for_attribute
     env.filters["clean_for_block"] = clean_for_block
+    env.add_extension(ErrorExtension)
 
 
 def get_level(filename: str) -> str:

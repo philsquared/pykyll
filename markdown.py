@@ -1,26 +1,8 @@
 import markdown
 import bleach
 
+from pykyll.allowed_tags import allowed_tags_with_links, allowed_tags
 from pykyll.html import strip_p_tag
-
-allowed_tags = ['abbr', 'acronym', 'b', 'blockquote', 'code',
-                'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
-                'h1', 'h2', 'h3', 'p', 'hr', 'br']
-
-allowed_tags_with_links = allowed_tags + ['a']
-
-
-def clean_for_attribute(text: str) -> str:
-    if not text:
-        return ""
-    return bleach.clean(text, tags=allowed_tags).replace('"', "&quot;").replace("'", "&apos;")
-
-
-def clean_for_block(text: str) -> str:
-    if not text:
-        return ""
-    html = bleach.clean(text, tags=allowed_tags_with_links)
-    return bleach.linkify(html)
 
 
 def render_markdown(
