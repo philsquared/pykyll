@@ -59,8 +59,12 @@ def resolve_relative_path(relative_path: str) -> str:
     return os.path.normpath(os.path.join(os.getcwd(), relative_path))
 
 
+def print_relative_file(relative_path: str, filename: str, prefix="\n"):
+    print(f"{prefix}file://{resolve_relative_path(relative_path)}/{filename}")
+
+
 def print_link(relative_path: str):
-    print(f"\nfile://{resolve_relative_path(relative_path)}/index.html")
+    print_relative_file(relative_path, "index.html")
 
 
 def path_diff(source_path: str, target_path: str) -> str:

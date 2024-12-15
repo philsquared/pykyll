@@ -14,8 +14,7 @@ import typing
 
 from pykyll.html import slugify, make_description, find_image_with_class
 from pykyll.markdown import render_markdown
-from pykyll.utils import format_datetime_for_blog, format_datetime_for_rss
-
+from pykyll.utils import format_datetime_for_blog, format_datetime_for_rss, format_longdate
 
 open_script_parser = re.compile(r'.*?<script.*?>(.*)', re.DOTALL)
 close_script_parser = re.compile(r'(.*)</script>.*', re.DOTALL)
@@ -40,6 +39,7 @@ class PostMetadata:
     guid: str
     hash: str
     tags: str
+    hide_title: bool
     version: int
     redirect_url: str  # If page used to be at a different url, what was it
     is_draft: bool
@@ -49,6 +49,9 @@ class PostMetadata:
 
     @property
     def formatted_timestamp(self): return format_datetime_for_blog(self.timestamp)
+
+    @property
+    def formatted_date(self): return format_longdate(self.timestamp)
 
     @property
     def rss_formatted_timestamp(self): return format_datetime_for_rss(self.timestamp)
@@ -70,6 +73,8 @@ class PostMetadata:
             "hash": self.hash,
             "version": self.version
         }
+        if self.hide_title:
+            properties["hide-title"] = True
         if self.redirect_url:
             if self.redirect_url:
                 properties["redirect"] = self.redirect_url
@@ -127,6 +132,7 @@ def read_metadata(path: str, base_url: str) -> PostMetadata:
     slug = try_get_property("slug", lambda: slugify(title))
     guid = try_get_property("guid", lambda: str(uuid.uuid4()))
     hash = try_get_property("hash", lambda: None)
+    hide_title = try_get_property("hide-title", lambda: False)
     version = try_get_property("version", lambda: 0)
 
     page_image = properties.get("page-image")
@@ -156,6 +162,7 @@ def read_metadata(path: str, base_url: str) -> PostMetadata:
         guid=guid,
         hash=hash,
         tags=tags,
+        hide_title=hide_title,
         version=version,
         redirect_url=redirect_url,
         is_draft=is_draft,
