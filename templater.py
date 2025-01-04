@@ -94,10 +94,12 @@ class Templater:
     def __init__(
             self, site: Site,
             templates_root: str,
-            email_templates_root: str | None = None):
+            email_templates_root: str | None = None,
+            **extra_data):
         self.site = site
         self.templates_root = templates_root
         self.email_templates_root = email_templates_root
+        self.extra_data = extra_data
 
     @staticmethod
     def render_from_template(
@@ -133,11 +135,12 @@ class Templater:
             rootdir = "../" * levels
         static_root = os.path.join(rootdir, self.site.static_target_subdir)
         template = get_string_based_environment().from_string(template_as_string)
+        args = self.extra_data | kwargs
         return template.render(
             rootdir=rootdir,
             static_root=static_root,
             site=self.site,
-            **kwargs)
+            **args)
 
     def render_to_string(
             self,
@@ -165,6 +168,7 @@ class Templater:
         if "menu" not in kwargs:
             kwargs["menu"] = self.site.menu
 
+        args = self.extra_data | kwargs
         return Templater.render_from_template(
             self.templates_root,
             template_name,
@@ -173,7 +177,7 @@ class Templater:
             canonical_url=canonical_url,
             site=self.site,
             page_summary=page_summary,
-            **kwargs)
+            **args)
 
     def render_to_file(
             self,
