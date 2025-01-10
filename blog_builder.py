@@ -174,9 +174,10 @@ def read_metadata(path: str, base_url: str) -> PostMetadata:
 
 
 class Post:
-    def __init__(self, metadata: PostMetadata, md_content: str):
+    def __init__(self, metadata: PostMetadata, md_content: str, summary_length = 500):
         self.md_content = md_content
         self.html_content = render_markdown(md_content)
+        self.summary_length = summary_length
         hash = hashlib.sha256(self.html_content.encode()).hexdigest()
         if hash == metadata.hash:
             self.metadata = metadata
@@ -187,7 +188,11 @@ class Post:
 
     @cached_property
     def summary(self):
-        return make_description(self.html_content, attribute_safe=False, wrap_in_p_tags=True, max_length=600)
+        return make_description(
+            self.html_content,
+            attribute_safe=False,
+            wrap_in_p_tags=True,
+            max_length=self.summary_length)
 
     @cached_property
     def description(self):
@@ -205,10 +210,10 @@ class Post:
         out_file.write(self.md_content.strip("\n"))
 
 
-def load_post_from_metadata(metadata: PostMetadata) -> Post:
+def load_post_from_metadata(metadata: PostMetadata, summary_length=400) -> Post:
     with codecs.open(metadata.filename, "r", "utf-8") as file:
         content = "".join(file.readlines()[metadata.content_line_no:])
-    return Post(metadata, content)
+    return Post(metadata, content, summary_length)
 
 
 def load_post_metadata(posts_dir: str, base_url: str) -> [PostMetadata]:
