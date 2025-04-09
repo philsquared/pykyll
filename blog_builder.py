@@ -76,12 +76,11 @@ class PostMetadata:
         if self.hide_title:
             properties["hide-title"] = True
         if self.redirect_url:
-            if self.redirect_url:
-                properties["redirect"] = self.redirect_url
-            if self.page_image:
-                properties["page-image"] = self.page_image
-            if self.tags:
-                properties["tags"] = ", ".join(self.tags)
+            properties["redirect"] = self.redirect_url
+        if self.page_image:
+            properties["page-image"] = self.page_image
+        if self.tags:
+            properties["tags"] = ", ".join(self.tags)
 
         return properties
 def read_metadata_strings(path: str) -> (str, str, int):
