@@ -53,10 +53,13 @@ def template_error(text: str) -> str:
     raise TemplateError(text)
 
 
-def add_filters(env: Environment):
+def add_filters(env: Environment, additional_filters = None):
     env.filters["markdown"] = markdown_filter
     env.filters["clean_for_attribute"] = clean_for_attribute
     env.filters["clean_for_block"] = clean_for_block
+    if additional_filters:
+        for name, fun in additional_filters.items():
+            env.filters[name] = fun
     env.add_extension(ErrorExtension)
 
 
@@ -74,19 +77,19 @@ class RelEnvironment(Environment):
         return os.path.normpath(os.path.join(os.path.dirname(parent), template))
 
 
-def get_string_based_environment() -> Environment:
+def get_string_based_environment(filters=None) -> Environment:
     env = Environment(trim_blocks=True,
                       lstrip_blocks=True)
-    add_filters(env)
+    add_filters(env, filters)
     return env
 
 
-def get_file_based_environment() -> Environment:
+def get_file_based_environment(filters=None) -> Environment:
     loader = FileSystemLoader(".")
     env = RelEnvironment(loader=loader,
                          trim_blocks=True,
                          lstrip_blocks=True)
-    add_filters(env)
+    add_filters(env, filters)
     return env
 
 
@@ -95,21 +98,25 @@ class Templater:
             self, site: Site,
             templates_root: str,
             email_templates_root: str | None = None,
+            filters = None, # Or dict of filters
             **extra_data):
         self.site = site
         self.templates_root = templates_root
         self.email_templates_root = email_templates_root
         self.extra_data = extra_data
+        self.filters = filters
+
 
     @staticmethod
     def render_from_template(
             directory: str,
             template_name: str,
+            filters=None,
             **kwargs):
         """
         Renders the named template and returns the rendered string
         """
-        env = get_file_based_environment()
+        env = get_file_based_environment(filters)
         template_path = os.path.normpath(os.path.join(directory, template_name))
         wd = os.getcwd()
         if template_path.startswith(wd):
@@ -118,11 +125,11 @@ class Templater:
         return template.render(**kwargs)
 
     @staticmethod
-    def render_from_string_raw(template_as_string: str, **kwargs) -> str:
+    def render_from_string_raw(template_as_string: str, filters = None, **kwargs) -> str:
         """
         Renders a template provided as a string and returns the rendered string
         """
-        template = get_string_based_environment().from_string(template_as_string)
+        template = get_string_based_environment(filters).from_string(template_as_string)
         return template.render(**kwargs)
 
     def render_from_string(self, template_as_string: str, levels: int = 0, rootdir=None, **kwargs) -> str:
@@ -134,7 +141,7 @@ class Templater:
         if rootdir is None:
             rootdir = "../" * levels
         static_root = os.path.join(rootdir, self.site.static_target_subdir)
-        template = get_string_based_environment().from_string(template_as_string)
+        template = get_string_based_environment(self.filters).from_string(template_as_string)
         args = self.extra_data | kwargs
         return template.render(
             rootdir=rootdir,
@@ -177,6 +184,7 @@ class Templater:
             canonical_url=canonical_url,
             site=self.site,
             page_summary=page_summary,
+            filters=self.filters,
             **args)
 
     def render_to_file(
@@ -207,4 +215,5 @@ class Templater:
             self.email_templates_root,
             template_name,
             site=self.site,
+            filters=self.filters,
             **kwargs)
