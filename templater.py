@@ -63,7 +63,7 @@ def add_filters(env: Environment, additional_filters = None):
     env.add_extension(ErrorExtension)
 
 
-def get_level(filename: str) -> str:
+def get_level(filename: str) -> int:
     dirname = os.path.dirname(filename)
     if dirname == "":
         return 0
