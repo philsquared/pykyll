@@ -199,7 +199,10 @@ class Post:
 
     @cached_property
     def page_image(self):
-        return find_image_with_class(self.html_content, "post-image")
+        if self.metadata.page_image:
+            return self.metadata.page_image
+        else:
+            return find_image_with_class(self.html_content, "post-image")
 
     def write(self, out_file: typing.TextIO):
         out_file.write('<script type="application/json">\n')
