@@ -218,10 +218,14 @@ def load_post_from_metadata(metadata: PostMetadata, summary_length=400) -> Post:
     return Post(metadata, content, summary_length)
 
 
-def load_post_metadata(posts_dir: str, base_url: str) -> [PostMetadata]:
-    filenames = [f for f in os.listdir(posts_dir) if os.path.isfile(os.path.join(posts_dir, f)) and f.endswith(".md")]
-    filenames.sort(reverse=True)
-    paths = [os.path.join(posts_dir, filename) for filename in filenames]
+def load_post_metadata(posts_dir: str, base_url: str, recurse_subdirs = True) -> [PostMetadata]:
+    paths = []
+    for root, _, files in os.walk(posts_dir):
+        paths += [os.path.join(root, file) for file in files if file.endswith(".md")]
+        if not recurse_subdirs:
+            break
+    paths.sort(reverse=True)
+
     return [read_metadata(path, base_url) for path in paths]
 
 
