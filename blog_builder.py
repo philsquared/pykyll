@@ -120,18 +120,18 @@ def read_metadata(path: str, base_url: str) -> PostMetadata:
     else:
         properties = {}
 
-    def try_get_property(name: str, compute_default):
+    def try_get_property(name: str, compute_default, persist_new_properties=True):
         value = properties.get(name)
         if value is None:
             nonlocal is_dirty
-            is_dirty = True
+            is_dirty = is_dirty or persist_new_properties
             value = compute_default()
         return value
 
     slug = try_get_property("slug", lambda: slugify(title))
     guid = try_get_property("guid", lambda: str(uuid.uuid4()))
     hash = try_get_property("hash", lambda: None)
-    hide_title = try_get_property("hide-title", lambda: False)
+    hide_title = try_get_property("hide-title", lambda: False, persist_new_properties=False)
     version = try_get_property("version", lambda: 0)
 
     page_image = properties.get("page-image")
