@@ -40,6 +40,7 @@ class PostMetadata:
     hash: str
     tags: str
     hide_title: bool
+    twitter: str | None
     version: int
     redirect_url: str  # If page used to be at a different url, what was it
     is_draft: bool
@@ -135,6 +136,7 @@ def read_metadata(path: str, base_url: str) -> PostMetadata:
     version = try_get_property("version", lambda: 0)
 
     page_image = properties.get("page-image")
+    twitter = properties.get("twitter")
     redirect_url = properties.get("redirect")
     tags = properties.get("tags")
     if tags:
@@ -162,6 +164,7 @@ def read_metadata(path: str, base_url: str) -> PostMetadata:
         hash=hash,
         tags=tags,
         hide_title=hide_title,
+        twitter=twitter,
         version=version,
         redirect_url=redirect_url,
         is_draft=is_draft,

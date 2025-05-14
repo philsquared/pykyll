@@ -111,6 +111,26 @@ def truncate_text_by_sentence(text: str, max_length: int, allow_sentence_to_be_c
     return truncated.strip()
 
 
+def reduce_text_to(text: str, max_len: int) -> str:
+    """
+    First reduces by sentence, then by comma.
+    Throws if it can't reduce enough
+    """
+    original_text = text
+    text = truncate_text_by_sentence(text, max_len)
+    while len(text) > max_len:
+        comma = text.find(",")
+        if comma != -1:
+            text = text[:comma]
+        else:
+            bracket = text.find("(")
+            if bracket != -1:
+                text = text[:bracket]
+            else:
+                raise Exception("Could not condense summary text: " + original_text)
+    return text
+
+
 def common_prefix(str1: str, str2: str) -> str:
     """
     Finds the longest matching substring at the start of the two supplied strings
