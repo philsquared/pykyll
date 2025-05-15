@@ -56,7 +56,7 @@ def build_posterchild(site_name: str,
         item = {
             "title": post.metadata.title,
             "description": post.description,
-            "link": post.metadata.public_url,
+            "link": link,
             "guid": post.metadata.guid,
             "last_updated": post.metadata.rss_formatted_timestamp,
             "twitter": tweet
