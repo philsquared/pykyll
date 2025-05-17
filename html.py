@@ -103,8 +103,10 @@ def find_image_with_class(html: str, class_name: str) -> str | None:
     Finds an image file within an img tag with a given class name
     """
     for img_match in img_parser.finditer(html):
-        if img_match.group(2) == class_name:
-            img_attrs = img_match.group(1) + " " + img_match.group(3)
-            if m := img_src_parser.match(img_attrs):
-                return m.group(1)
+        classes = img_match.group(2).split(" ")
+        for cls in classes:
+            if cls == class_name:
+                img_attrs = img_match.group(1) + " " + img_match.group(3)
+                if m := img_src_parser.match(img_attrs):
+                    return m.group(1)
     return None
