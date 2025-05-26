@@ -9,6 +9,26 @@ from pykyll.templater import Templater
 from pykyll.utils import format_datetime_for_rss, reduce_text_to
 
 
+def _get_social_media_template(link: str) -> str:
+    return f"""%%%%
+
+{link}
+"""
+
+def get_sm_content(post: Post, link: str, max_len: int) -> str:
+    summary = post.metadata.twitter or post.description
+    sm_template = _get_social_media_template(link)
+
+    try:
+        content_max_len = max_len - (len(sm_template) - 4)
+        content = reduce_text_to(summary, content_max_len)
+    except Exception as e:
+        print(e)
+        print(f"while processing episode: {post.metadata.filename}")
+        os.abort()
+
+    return sm_template.replace("%%%%", content)
+
 def build_rss(templater: Templater,
               all_posts: [Post],
               rss_filename: str,
@@ -34,24 +54,10 @@ def build_posterchild(site_name: str,
 
     items = []
     for post in all_posts:
-        summary = post.metadata.twitter or post.description
-
         link, _ = os.path.splitext(post.metadata.public_url)
 
-        tweet_len = 280
-
-        tweet_template = f"""%%%%
-
-{link}
-"""
-        try:
-            content = reduce_text_to(summary, tweet_len - (len(tweet_template) - 4))
-        except Exception as e:
-            print(e)
-            print(f"while processing post: {post.metadata.filename}")
-            os.abort()
-
-        tweet = tweet_template.replace("%%%%", content)
+        tweet = get_sm_content(post, link, 280)
+        toot = get_sm_content(post, link, 512)
 
         item = {
             "title": post.metadata.title,
@@ -59,7 +65,8 @@ def build_posterchild(site_name: str,
             "link": link,
             "guid": post.metadata.guid,
             "last_updated": post.metadata.rss_formatted_timestamp,
-            "twitter": tweet
+            "twitter": tweet,
+            "mastodon": toot
         }
         items.append(item)
 
