@@ -15,10 +15,10 @@ def render_markdown(
     if not text:
         return ""
 
+    extensions = ['extra']
     if embedded_code:
-        html = markdown.markdown(text, extensions=['fenced_code'], output_format='html')
-    else:
-        html = markdown.markdown(text, output_format='html')
+        extensions.append('fenced_code')
+    html = markdown.markdown(text, extensions=extensions, output_format='html')
     if strip_outer_p_tag:
         html = strip_p_tag(html)
     if clean:
