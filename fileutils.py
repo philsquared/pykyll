@@ -29,28 +29,32 @@ def needs_sync(source_file: str, target_file: str) -> bool:
     return not os.path.exists(target_file) or os.path.getmtime(source_file) > os.path.getmtime(target_file)
 
 
-def sync_file(source: str, target: str, always_copy=False) -> bool:
-    if not always_copy and not needs_sync(source, target):
+def sync_file(source_path: str, target_dir: str, always_copy=False, processor=None, ignore_absence=False) -> bool:
+    if ignore_absence and not os.path.exists(source_path):
         return False
 
-    ensure_parent_dirs(target)
-    shutil.copy2(source, target)
+    source_file = os.path.basename(source_path)
+    target_path = os.path.join(target_dir, source_file)
+    if not always_copy and not needs_sync(source_path, target_path):
+        return False
+
+    ensure_dirs(target_dir)
+
+    if not processor or not processor(source_path, target_path):
+        shutil.copy2(source_path, target_path)
     return True
 
 
-def sync_files(source: str, target: str, always_copy=False, processor=None) -> int:
+def sync_files(source_dir: str, target_dir: str, always_copy=False, processor=None) -> int:
     synced = 0
-    for file in os.listdir(source):
-        source_path = os.path.join(source, file)
+    for file in os.listdir(source_dir):
+        source_path = os.path.join(source_dir, file)
         if os.path.isdir(source_path):
-            synced = synced + sync_files(os.path.join(source, file),
-                                         os.path.join(target, file),
+            synced = synced + sync_files(os.path.join(source_dir, file),
+                                         os.path.join(target_dir, file),
                                          always_copy, processor)
         else:
-            target_path = os.path.join(target, file)
-            if processor and processor(source_path, target_path):
-                synced = synced + 1
-            elif sync_file(source_path, target_path, always_copy):
+            if sync_file(source_path, target_dir, always_copy=always_copy, processor=processor):
                 synced = synced + 1
     return synced
 
