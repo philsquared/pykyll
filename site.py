@@ -34,7 +34,7 @@ class Site:
     image: str  # Default image associated with each page (can be overridden)
     keywords: str
     author: str
-    rootdir: str = "/"  #  Absolute root directory - will be local qualified dir for debug
+    rootdir: str = ""  #  root directory - will be local qualified dir for debug, or empty for prod
     output_dir: str = "web"  # Where the site files should be generated to
     static_target_subdir: str = "static"
     posts_subdir: str = "posts"  # Sub-directory where blog/ news/ journal posts should be generated to
