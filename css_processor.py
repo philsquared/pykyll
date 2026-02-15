@@ -90,6 +90,7 @@ class CssProcessor:
                 "}\n"
             ]
             processed_lines = processed_lines + font_lines
+            print(f"Added font {font.font_family} to CSS for {target_path}")
 
         processed_lines = processed_lines + ["/* end of web fonts */", ""] + css_lines
         return processed_lines
