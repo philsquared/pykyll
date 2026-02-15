@@ -5,6 +5,7 @@ import sass
 
 from pykyll.fileutils import path_diff, ensure_parent_dirs
 from pykyll.fonts import AvailableFonts
+from pykyll.templater import Templater
 
 font_re = re.compile(r"\s*font-family\s*:\s*(.*?);")
 font_var_re = re.compile(r"\s*--.*?font\s*:\s*(.*?);")
@@ -12,17 +13,17 @@ font_var_re = re.compile(r"\s*--.*?font\s*:\s*(.*?);")
 
 class CssProcessor:
 
-    def __init__(self, available_fonts : AvailableFonts, fonts_target_dir: str):
+    def __init__(self, available_fonts : AvailableFonts, fonts_target_dir: str, **template_args):
         self.available_fonts = available_fonts
         self.all_required_fonts = set()
         self.fonts_target_dir = fonts_target_dir
+        self.template_args = template_args
 
     def process(self, source_path: str, target_path: str) -> bool:
-        required_fonts = set()
         path_without_ext, ext = os.path.splitext(target_path)
         match ext:
             case ".css":
-                return self.process_css(source_path, target_path)
+                return self.process_css_file(source_path, target_path)
             case ".scss":
                 filename = os.path.basename(source_path)
                 if filename.startswith("_"):
@@ -32,21 +33,30 @@ class CssProcessor:
             case _:
                 return False
 
-    def process_css(self, source_path: str, target_path: str) -> bool:
+    def process_css_file(self, source_path: str, target_path: str) -> bool:
         with open(source_path, "r") as f:
-            lines = f.readlines()
+            content = f.read()
+        return self.process_css(content, target_path)
+
+    def process_css(self, content: str, target_path: str, always_write=False) -> bool:
+        if self.template_args:
+            content = Templater.render_from_string_raw (content, filters=None, **self.template_args)
+
+        lines = content.split("\n")
 
         processed_lines = self.process_css_lines(lines, target_path)
         if processed_lines:
+            lines = processed_lines
+        elif not always_write:
+            lines = []
+        if lines:
             ensure_parent_dirs(target_path)
             with open(target_path, "w") as of:
-                of.writelines(processed_lines)
-            return True
-        else:
-            return False
+                for line in lines:
+                    of.write(f"{line}\n")
+        return len(processed_lines) > 0
 
-    def process_css_lines(self, css_lines: [str], target_path: str) -> [str]:
-        # !TBD: rewrite this as a generator
+    def process_css_lines(self, css_lines: list[str], target_path: str) -> list[str]:
         required_fonts = set()
 
         for line in css_lines:
@@ -90,13 +100,5 @@ class CssProcessor:
 
     def process_scss(self, source_path: str, target_path: str) -> bool:
         css = sass.compile(filename=source_path)
-        lines = css.split("\n")
-        processed_lines = self.process_css_lines(lines, target_path)
-        if processed_lines:
-            lines = processed_lines
-
-        ensure_parent_dirs(target_path)
-        with open(target_path, "w") as of:
-            for line in lines:
-                of.write(f"{line}\n")
+        self.process_css(css, target_path, always_write=True)
         return True

@@ -221,7 +221,7 @@ def load_post_from_metadata(metadata: PostMetadata, summary_length=400) -> Post:
     return Post(metadata, content, summary_length)
 
 
-def load_post_metadata(posts_dir: str, base_url: str, recurse_subdirs = True) -> [PostMetadata]:
+def load_post_metadata(posts_dir: str, base_url: str, recurse_subdirs = True) -> list[PostMetadata]:
     paths = []
     for root, _, files in os.walk(posts_dir):
         paths += [os.path.join(root, file) for file in files if file.endswith(".md")]
@@ -232,7 +232,7 @@ def load_post_metadata(posts_dir: str, base_url: str, recurse_subdirs = True) ->
     return [read_metadata(path, base_url) for path in paths]
 
 
-def load_post(posts_dir: str, base_url: str) -> [Post]:
+def load_post(posts_dir: str, base_url: str) -> Post:
     metadata = read_metadata(posts_dir, base_url)
     return load_post_from_metadata(metadata)
 

@@ -30,7 +30,7 @@ def get_sm_content(post: Post, link: str, max_len: int) -> str:
     return sm_template.replace("%%%%", content)
 
 def build_rss(templater: Templater,
-              all_posts: [Post],
+              all_posts: list[Post],
               rss_filename: str,
               template_name=os.path.join(os.path.dirname(__file__), "_templates/rss.template.xml")):
     last_build_date = format_datetime_for_rss(datetime.now())
@@ -48,7 +48,7 @@ def build_rss(templater: Templater,
 
 def build_posterchild(site_name: str,
                       public_url: str,
-                      all_posts: [Post],
+                      all_posts: list[Post],
                       posterchild_filename: str):
     last_build_date = format_datetime_for_rss(datetime.now())
 
