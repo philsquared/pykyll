@@ -462,6 +462,7 @@ dependencies = [
     { name = "jinja2" },
     { name = "libsass" },
     { name = "markdown" },
+    { name = "pygments" },
     { name = "python-dateutil" },
     { name = "pyyaml" },
 ]
@@ -481,6 +482,7 @@ requires-dist = [
     { name = "jinja2", specifier = "==3.1.6" },
     { name = "libsass", specifier = "==0.23.0" },
     { name = "markdown", specifier = "==3.11.2" },
+    { name = "pygments", specifier = "==2.21.0" },
     { name = "python-dateutil", specifier = "==2.9.0.post0" },
     { name = "pyyaml", specifier = "==6.0.3" },
 ]
