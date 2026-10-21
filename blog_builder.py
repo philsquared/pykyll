@@ -179,7 +179,9 @@ class Post:
         self.md_content = md_content
         self.html_content = render_markdown(md_content)
         self.summary_length = summary_length
-        hash = hashlib.sha256(self.html_content.encode()).hexdigest()
+        # Hash the source, rather than the rendered html, so the hash only changes when the post is edited
+        # (not when rendering changes, e.g. due to dependency updates). Stripped to match how write() saves it
+        hash = hashlib.sha256(f"{metadata.title}\n{md_content.strip("\n")}".encode()).hexdigest()
         if hash == metadata.hash:
             self.metadata = metadata
         else:
