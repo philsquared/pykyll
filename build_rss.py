@@ -1,4 +1,3 @@
-import codecs
 import os
 from datetime import datetime
 
@@ -76,6 +75,6 @@ def build_posterchild(site_name: str,
         "last_build_date": last_build_date,
         "items": items
     }
-    with codecs.open(posterchild_filename, "w", "utf-8") as f:
+    with open(posterchild_filename, "w", encoding="utf-8") as f:
         yaml.dump(data, f, default_flow_style=False, sort_keys=False)
 

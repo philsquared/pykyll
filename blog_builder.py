@@ -1,4 +1,3 @@
-import codecs
 import copy
 import hashlib
 import json
@@ -87,7 +86,7 @@ class PostMetadata:
 def read_metadata_strings(path: str) -> (str, str, int):
     script_text = None
     reading_script = False
-    with codecs.open(path, "r", "utf-8") as file:
+    with open(path, "r", encoding="utf-8") as file:
         for line_no, line in enumerate(file.readlines()):
             if not reading_script:
                 m = html_title_parser.match(line)
@@ -216,7 +215,7 @@ class Post:
 
 
 def load_post_from_metadata(metadata: PostMetadata, summary_length=400) -> Post:
-    with codecs.open(metadata.filename, "r", "utf-8") as file:
+    with open(metadata.filename, "r", encoding="utf-8") as file:
         content = "".join(file.readlines()[metadata.content_line_no:])
     return Post(metadata, content, summary_length)
 
@@ -240,7 +239,7 @@ def load_post(posts_dir: str, base_url: str) -> Post:
 def save_post(post: Post):
     basename, ext = os.path.splitext(post.metadata.filename)
     temp_filename = f"{basename}.new{ext}"
-    with codecs.open(temp_filename, "w", "utf-8") as out_file:
+    with open(temp_filename, "w", encoding="utf-8") as out_file:
         post.write(out_file)
     os.remove(post.metadata.filename)
     os.rename(temp_filename, post.metadata.filename)

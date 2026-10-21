@@ -1,0 +1,31 @@
+[project]
+name = "pykyll"
+version = "0.1.0"
+description = "A static site generator, with similarities to Jekyll, written in Python"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "jinja2==3.1.6",
+    "markdown==3.11.2",
+    "bleach==6.4.0",
+    "beautifulsoup4==4.15.0",
+    "python-dateutil==2.9.0.post0",
+    "html-text==0.7.1",
+    "pyyaml==6.0.3",
+    "fonttools==4.67.0",
+    "brotli==1.2.0", # Needed by fonttools
+    "libsass==0.23.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest==9.1.1",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["unit_tests"]
+# Tests import this repo as the `pykyll` package, so its parent dir must be on the path
+pythonpath = [".."]
