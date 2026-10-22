@@ -3,7 +3,7 @@ import bleach
 from pygments.formatters import HtmlFormatter
 
 from pykyll.allowed_tags import allowed_tags_with_links, allowed_tags
-from pykyll.html import strip_p_tag
+from pykyll.htmlutils import strip_p_tag
 
 
 class CodeHtmlFormatter(HtmlFormatter):

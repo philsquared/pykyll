@@ -7,7 +7,7 @@ from jinja2.ext import Extension
 from jinja2.nodes import CallBlock, Const
 
 from .allowed_tags import allowed_tags, allowed_tags_with_links
-from .markdown import render_markdown
+from .markdownutils import render_markdown
 from .site import Site
 from .fileutils import ensure_parent_dirs
 

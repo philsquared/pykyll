@@ -11,8 +11,8 @@ from functools import cached_property
 import dateutil.parser
 import typing
 
-from pykyll.html import slugify, make_description, find_image_with_class
-from pykyll.markdown import render_markdown
+from pykyll.htmlutils import slugify, make_description, find_image_with_class
+from pykyll.markdownutils import render_markdown
 from pykyll.utils import format_datetime_for_blog, format_datetime_for_rss, format_longdate
 
 open_script_parser = re.compile(r'.*?<script.*?>(.*)', re.DOTALL)

@@ -1,4 +1,4 @@
-from pykyll.html import strip_tag, strip_p_tag, slugify, make_description, find_image_with_class
+from pykyll.htmlutils import strip_tag, strip_p_tag, slugify, make_description, find_image_with_class
 
 
 def test_strip_tags():

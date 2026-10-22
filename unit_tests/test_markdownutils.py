@@ -1,4 +1,4 @@
-from pykyll.markdown import render_markdown
+from pykyll.markdownutils import render_markdown
 
 
 def test_fenced_code_is_highlighted():

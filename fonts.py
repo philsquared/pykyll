@@ -5,7 +5,7 @@ import yaml
 from fontTools.ttLib import TTFont
 
 from pykyll.fileutils import ensure_dirs, needs_sync
-from pykyll.html import slugify
+from pykyll.htmlutils import slugify
 
 
 class FontInfo:
