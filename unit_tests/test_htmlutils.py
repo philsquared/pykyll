@@ -1,4 +1,5 @@
-from pykyll.htmlutils import strip_tag, strip_p_tag, slugify, make_description, find_image_with_class
+from pykyll.htmlutils import strip_tag, strip_p_tag, slugify, make_description, find_image_with_class, clean_html, linkify
+from pykyll.allowed_tags import allowed_tags, allowed_tags_with_links
 
 
 def test_strip_tags():
@@ -66,3 +67,34 @@ def test_image_parser():
     assert find_image_with_class('<img  src = "xyz.jpg" alt="hello"  class = "abc" >', "abc") == "xyz.jpg"
 
     assert find_image_with_class('<img src="xyz.jpg" class="abc">\n<img src="ijk.png" class="abc">', "abc") == "xyz.jpg"
+
+
+def test_clean_html():
+    # Allowed tags are kept, others removed (but not their text)
+    assert clean_html("<p><b>bold</b> <span>plain</span></p>", allowed_tags) == "<p><b>bold</b> plain</p>"
+    assert clean_html('<a href="https://example.com">link</a>', allowed_tags) == "link"
+    assert clean_html('<a href="https://example.com" onclick="x()">link</a>', allowed_tags_with_links) == '<a href="https://example.com">link</a>'
+
+    # Scripts are removed entirely, and unsafe links lose their href
+    assert clean_html("<script>alert(1)</script>text", allowed_tags) == "text"
+    assert clean_html('<a href="javascript:alert(1)">link</a>', allowed_tags_with_links) == "<a>link</a>"
+
+    # Text is escaped
+    assert clean_html("1 < 2 & 3", allowed_tags) == "1 &lt; 2 &amp; 3"
+
+
+def test_linkify():
+    assert linkify("see https://example.com/page.") == 'see <a href="https://example.com/page">https://example.com/page</a>.'
+    assert linkify("<p>at example.com</p>") == '<p>at <a href="http://example.com">example.com</a></p>'
+
+    # Entities in the URL are left as they are (so it's still valid in the href)
+    assert linkify("https://example.com/?a=1&amp;b=2") == '<a href="https://example.com/?a=1&amp;b=2">https://example.com/?a=1&amp;b=2</a>'
+
+    # Existing links, and urls in attributes, are left alone
+    existing = '<a href="https://example.com">https://example.com</a> <abbr title="https://example.com">x</abbr>'
+    assert linkify(existing) == existing
+
+    # Bare email addresses aren't linked
+    assert linkify("me@example.com") == "me@example.com"
+
+    assert linkify("no links here") == "no links here"

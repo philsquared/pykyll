@@ -2,6 +2,15 @@
 A static site generator, with similarities to Jekyll, written in Python. Pronounced like "Pickle".
 
 This is currently intended to be used by including this repo as a submodule - but there's no reason that other methods shouldn't work.
+The repo is also an installable package, so a project using uv can install the submodule as an editable dependency (rather than putting its parent directory on the import path):
+
+```toml
+[project]
+dependencies = ["pykyll"]
+
+[tool.uv.sources]
+pykyll = { path = "pykyll", editable = true }
+```
 
 Dependencies are managed with [uv](https://docs.astral.sh/uv/) - see `pyproject.toml`. To run the unit tests:
 

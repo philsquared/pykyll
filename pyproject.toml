@@ -4,29 +4,38 @@ version = "0.1.0"
 description = "A static site generator, with similarities to Jekyll, written in Python"
 readme = "README.md"
 requires-python = ">=3.12"
+# Minimum versions, so projects using pykyll can take newer releases (uv.lock pins what pykyll itself is tested with)
 dependencies = [
-    "jinja2==3.1.6",
-    "markdown==3.11.2",
-    "bleach==6.4.0",
-    "beautifulsoup4==4.15.0",
-    "python-dateutil==2.9.0.post0",
-    "html-text==0.7.1",
-    "pyyaml==6.0.3",
-    "fonttools==4.67.0",
-    "brotli==1.2.0", # Needed by fonttools
-    "libsass==0.23.0",
-    "pygments==2.21.0",
+    "jinja2>=3.1.6",
+    "markdown>=3.11.2",
+    "nh3>=0.3.7",
+    "linkify-it-py>=2.2.0",
+    "beautifulsoup4>=4.15.0",
+    "python-dateutil>=2.9.0.post0",
+    "html-text>=0.7.1",
+    "pyyaml>=6.0.3",
+    "fonttools>=4.67.0",
+    "brotli>=1.2.0", # Needed by fonttools
+    "libsass>=0.23.0",
+    "pygments>=2.21.0",
 ]
 
 [dependency-groups]
 dev = [
-    "pytest==9.1.1",
+    "pytest>=9.1.1",
 ]
 
-[tool.uv]
-package = false
+[build-system]
+requires = ["setuptools>=80"]
+build-backend = "setuptools.build_meta"
+
+# This repo's root *is* the pykyll package (so it can also be used as a submodule, with its parent dir on the import path)
+[tool.setuptools]
+package-dir = { "pykyll" = "." }
+packages = ["pykyll"]
+
+[tool.setuptools.package-data]
+pykyll = ["_templates/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["unit_tests"]
-# Tests import this repo as the `pykyll` package, so its parent dir must be on the path
-pythonpath = [".."]

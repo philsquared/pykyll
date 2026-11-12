@@ -1,7 +1,6 @@
 import os
 import typing as t
 
-import bleach
 from jinja2 import FileSystemLoader, Environment, nodes, TemplateAssertionError
 from jinja2.ext import Extension
 from jinja2.nodes import CallBlock, Const
@@ -10,6 +9,7 @@ from .allowed_tags import allowed_tags, allowed_tags_with_links
 from .markdownutils import render_markdown
 from .site import Site
 from .fileutils import ensure_parent_dirs
+from .htmlutils import clean_html, linkify
 
 
 class TemplateError(TemplateAssertionError):
@@ -39,14 +39,13 @@ def markdown_filter(markdown: str) -> str:
 def clean_for_attribute(text: str) -> str:
     if not text:
         return ""
-    return bleach.clean(text, tags=allowed_tags).replace('"', "&quot;").replace("'", "&apos;")
+    return clean_html(text, allowed_tags).replace('"', "&quot;").replace("'", "&apos;")
 
 
 def clean_for_block(text: str) -> str:
     if not text:
         return ""
-    html = bleach.clean(text, tags=allowed_tags_with_links)
-    return bleach.linkify(html)
+    return linkify(clean_html(text, allowed_tags_with_links))
 
 
 def template_error(text: str) -> str:

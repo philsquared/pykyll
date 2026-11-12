@@ -1,9 +1,8 @@
 import markdown
-import bleach
 from pygments.formatters import HtmlFormatter
 
 from pykyll.allowed_tags import allowed_tags_with_links, allowed_tags
-from pykyll.htmlutils import strip_p_tag
+from pykyll.htmlutils import strip_p_tag, clean_html, linkify as linkify_html
 
 
 class CodeHtmlFormatter(HtmlFormatter):
@@ -56,9 +55,9 @@ def render_markdown(
             for e in remove_elements:
                 tags.remove(e)
 
-        html = bleach.clean(html, tags=tags)
+        html = clean_html(html, tags)
     if linkify:
-        return bleach.linkify(html)
+        return linkify_html(html)
     else:
         return html
 
