@@ -1,8 +1,6 @@
 import os
 import re
 
-import sass
-
 from pykyll.fileutils import path_diff, ensure_parent_dirs
 from pykyll.fonts import AvailableFonts
 from pykyll.templater import Templater
@@ -34,7 +32,7 @@ class CssProcessor:
                 return False
 
     def process_css_file(self, source_path: str, target_path: str) -> bool:
-        with open(source_path, "r") as f:
+        with open(source_path, "r", encoding="utf-8") as f:
             content = f.read()
         return self.process_css(content, target_path)
 
@@ -51,7 +49,7 @@ class CssProcessor:
             lines = []
         if lines:
             ensure_parent_dirs(target_path)
-            with open(target_path, "w") as of:
+            with open(target_path, "w", encoding="utf-8") as of:
                 for line in lines:
                     of.write(f"{line}\n")
         return len(processed_lines) > 0
@@ -100,6 +98,10 @@ class CssProcessor:
             self.available_fonts.sync_font(font, self.fonts_target_dir)
 
     def process_scss(self, source_path: str, target_path: str) -> bool:
+        try:
+            import sass
+        except ImportError as e:
+            raise ImportError("Compiling SCSS needs pykyll's scss extra (e.g. pykyll[scss])") from e
         css = sass.compile(filename=source_path)
         self.process_css(css, target_path, always_write=True)
         return True

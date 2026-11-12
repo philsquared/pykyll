@@ -1,18 +1,23 @@
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 
 
 @dataclass
 class ContentEngine:
     sources_root: str = "."
-    instance_root: str = os.path.realpath(sources_root)
+    # Defaults to the absolute path of sources_root (resolved when created, not when this module is imported)
+    instance_root: str | None = field(default=None)
     static_source_subdir: str = "_static"
     content_source_subdir: str = "_content"
     templates_source_subdir: str = "_templates"
     email_templates_source_subdir: str = "_email_templates"
     posts_source_subdir: str = "_posts"
     fonts_source_subdir: str = "_fonts"
+
+    def __post_init__(self):
+        if self.instance_root is None:
+            self.instance_root = os.path.realpath(self.sources_root)
 
     @property
     def static_source_path(self): return os.path.join(self.sources_root, self.static_source_subdir)

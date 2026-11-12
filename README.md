@@ -12,6 +12,9 @@ dependencies = ["pykyll"]
 pykyll = { path = "pykyll", editable = true }
 ```
 
+Some features need optional extras: `scss` (compiling `.scss` files) and `fonts` (converting fonts to web fonts), e.g. `dependencies = ["pykyll[scss,fonts]"]`.
+To work on pykyll itself with these installed, use `uv sync --all-extras`.
+
 Dependencies are managed with [uv](https://docs.astral.sh/uv/) - see `pyproject.toml`. To run the unit tests:
 
 ```sh

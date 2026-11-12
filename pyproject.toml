@@ -14,10 +14,19 @@ dependencies = [
     "python-dateutil>=2.9.0.post0",
     "html-text>=0.7.1",
     "pyyaml>=6.0.3",
-    "fonttools>=4.67.0",
-    "brotli>=1.2.0", # Needed by fonttools
-    "libsass>=0.23.0",
     "pygments>=2.21.0",
+]
+
+# Only needed for some features, so projects that use them must ask for them (e.g. pykyll[scss,fonts])
+[project.optional-dependencies]
+# For compiling .scss files in CssProcessor
+scss = [
+    "libsass>=0.23.0",
+]
+# For converting fonts to web fonts (AvailableFonts.sync_font, and so CssProcessor when CSS uses available fonts)
+fonts = [
+    "fonttools>=4.67.0",
+    "brotli>=1.2.0", # Needed by fonttools, for woff2
 ]
 
 [dependency-groups]

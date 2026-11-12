@@ -63,6 +63,6 @@ def render_markdown(
 
 
 def read_markdown(markdown_path: str) -> str:
-    with open(markdown_path, 'r') as f:
+    with open(markdown_path, 'r', encoding='utf-8') as f:
         md = f.read()
     return markdown.markdown(md)

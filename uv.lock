@@ -519,17 +519,23 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "beautifulsoup4" },
-    { name = "brotli" },
-    { name = "fonttools" },
     { name = "html-text" },
     { name = "jinja2" },
-    { name = "libsass" },
     { name = "linkify-it-py" },
     { name = "markdown" },
     { name = "nh3" },
     { name = "pygments" },
     { name = "python-dateutil" },
     { name = "pyyaml" },
+]
+
+[package.optional-dependencies]
+fonts = [
+    { name = "brotli" },
+    { name = "fonttools" },
+]
+scss = [
+    { name = "libsass" },
 ]
 
 [package.dev-dependencies]
@@ -540,11 +546,11 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "beautifulsoup4", specifier = ">=4.15.0" },
-    { name = "brotli", specifier = ">=1.2.0" },
-    { name = "fonttools", specifier = ">=4.67.0" },
+    { name = "brotli", marker = "extra == 'fonts'", specifier = ">=1.2.0" },
+    { name = "fonttools", marker = "extra == 'fonts'", specifier = ">=4.67.0" },
     { name = "html-text", specifier = ">=0.7.1" },
     { name = "jinja2", specifier = ">=3.1.6" },
-    { name = "libsass", specifier = ">=0.23.0" },
+    { name = "libsass", marker = "extra == 'scss'", specifier = ">=0.23.0" },
     { name = "linkify-it-py", specifier = ">=2.2.0" },
     { name = "markdown", specifier = ">=3.11.2" },
     { name = "nh3", specifier = ">=0.3.7" },
@@ -552,6 +558,7 @@ requires-dist = [
     { name = "python-dateutil", specifier = ">=2.9.0.post0" },
     { name = "pyyaml", specifier = ">=6.0.3" },
 ]
+provides-extras = ["scss", "fonts"]
 
 [package.metadata.requires-dev]
 dev = [{ name = "pytest", specifier = ">=9.1.1" }]

@@ -2,7 +2,6 @@ import os
 import shutil
 
 import yaml
-from fontTools.ttLib import TTFont
 
 from pykyll.fileutils import ensure_dirs, needs_sync
 from pykyll.htmlutils import slugify
@@ -34,7 +33,7 @@ class FontInfo:
         if not self.otf_file:
             raise Exception(f"No otf file found in {font_dir}")
         if info_file:
-            with open(os.path.join(font_dir, info_file), 'r') as f:
+            with open(os.path.join(font_dir, info_file), 'r', encoding='utf-8') as f:
                 data = yaml.safe_load(f)
 
             self.font_family = data["font-family"]
@@ -83,6 +82,10 @@ class AvailableFonts:
                 not(txt_source_path is not None and needs_sync(txt_source_path, txt_target_path)):
             return False
 
+        try:
+            from fontTools.ttLib import TTFont
+        except ImportError as e:
+            raise ImportError("Converting fonts needs pykyll's fonts extra (e.g. pykyll[fonts])") from e
         print(f"syncing {otf_path} into {target_base_path}")
         ensure_dirs(target_dir)
         otf_font = TTFont(otf_path)

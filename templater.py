@@ -84,7 +84,9 @@ def get_string_based_environment(filters=None) -> Environment:
 
 
 def get_file_based_environment(filters=None) -> Environment:
-    loader = FileSystemLoader(".")
+    # Rooted at the filesystem root, with templates named by absolute path,
+    # so they can be anywhere (not just under the working directory)
+    loader = FileSystemLoader("/")
     env = RelEnvironment(loader=loader,
                          trim_blocks=True,
                          lstrip_blocks=True)
@@ -116,10 +118,7 @@ class Templater:
         Renders the named template and returns the rendered string
         """
         env = get_file_based_environment(filters)
-        template_path = os.path.normpath(os.path.join(directory, template_name))
-        wd = os.getcwd()
-        if template_path.startswith(wd):
-            template_path = template_path[len(wd)+1:]
+        template_path = os.path.abspath(os.path.join(directory, template_name))
         template = env.get_template(template_path)
         return template.render(**kwargs)
 
@@ -204,7 +203,7 @@ class Templater:
         rendered = self.render_to_string(template_name, levels, canonical_url, page_summary, **kwargs)
         path = os.path.join(self.site.output_dir, filename)
         ensure_parent_dirs(path)
-        with open(path, 'w') as out_file:
+        with open(path, 'w', encoding='utf-8') as out_file:
             out_file.write(rendered)
 
     def render_email(self, template_name, **kwargs):
