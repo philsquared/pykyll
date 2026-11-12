@@ -26,3 +26,18 @@ Sites are generated from templates, posts (blog posts or articles), and (fixed) 
 ### Templating
 
 Jinga2 is used for templating.
+
+### Fonts
+
+`CssProcessor` (used as the processor when syncing static files) adds `@font-face` rules to CSS for any fonts it uses that are in the fonts directory (`_fonts`, by default), and `sync_fonts()` then generates `.woff2` web fonts for them (needs the `fonts` extra).
+Pass `woff=True` to also generate `.woff` files (only needed for very old browsers).
+
+Each face of a font (each weight and style) is a subdirectory with one `.otf` or `.ttf` file, an optional `.txt` file (e.g. the licence, which is copied alongside), and an optional `.yml` file:
+
+```yaml
+font-family: Nanum Gothic # Defaults to the directory name
+font-weight: bold         # Defaults to normal
+font-style: normal        # Defaults to normal
+font-display: swap        # Defaults to swap
+unicode-range: latin      # Optional. Subsets the font to these characters: a CSS unicode-range, or latin or latin-ext
+```

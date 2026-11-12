@@ -35,13 +35,19 @@ def sync_file(source_path: str, target_dir: str, always_copy=False, processor=No
 
     source_file = os.path.basename(source_path)
     target_path = os.path.join(target_dir, source_file)
-    if not always_copy and not needs_sync(source_path, target_path):
+    out_of_date = always_copy or needs_sync(source_path, target_path)
+
+    # Processors with always_process set are called even if the target is up to date (e.g. if their output also
+    # depends on other files), and are responsible for only writing the target if it has changed
+    if processor and (out_of_date or getattr(processor, "always_process", False)):
+        ensure_dirs(target_dir)
+        if processor(source_path, target_path):
+            return out_of_date
+    if not out_of_date:
         return False
 
     ensure_dirs(target_dir)
-
-    if not processor or not processor(source_path, target_path):
-        shutil.copy2(source_path, target_path)
+    shutil.copy2(source_path, target_path)
     return True
 
 

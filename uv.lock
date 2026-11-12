@@ -540,6 +540,7 @@ scss = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "pykyll", extra = ["fonts", "scss"] },
     { name = "pytest" },
 ]
 
@@ -561,7 +562,10 @@ requires-dist = [
 provides-extras = ["scss", "fonts"]
 
 [package.metadata.requires-dev]
-dev = [{ name = "pytest", specifier = ">=9.1.1" }]
+dev = [
+    { name = "pykyll", extras = ["scss", "fonts"] },
+    { name = "pytest", specifier = ">=9.1.1" },
+]
 
 [[package]]
 name = "pytest"

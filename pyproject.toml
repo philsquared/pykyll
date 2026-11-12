@@ -32,6 +32,8 @@ fonts = [
 [dependency-groups]
 dev = [
     "pytest>=9.1.1",
+    # So the optional features can be tested
+    "pykyll[scss,fonts]",
 ]
 
 [build-system]
