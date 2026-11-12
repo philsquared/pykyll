@@ -126,6 +126,12 @@ def test_fonts_are_subset_to_unicode_range(fonts_dir, tmp_path):
     assert set(TTFont(out / "body-italic.woff2").getBestCmap()) == {ord("A"), ord("B")}
     assert set(TTFont(out / "nanum-gothic.woff2").getBestCmap()) == {ord("A"), ord("B"), ord("가")}
 
+    add_face(fonts_dir, "Both", "font-family: Both\nunicode-range: [latin, U+AC00]\n")
+    both, = AvailableFonts(str(fonts_dir)).find_fonts("Both")
+    assert both.unicode_range.startswith("U+0000-00FF, ") and both.unicode_range.endswith(", U+AC00")
+    fonts.sync_font(both, str(out))
+    assert set(TTFont(out / "both.woff2").getBestCmap()) == {ord("A"), ord("B"), ord("가")}
+
     processor = CssProcessor(fonts, "fonts")
     assert "  unicode-range: U+0000-00FF, U+0131" in "\n".join(processor.process_css_lines(["p { font-family: Body; }"], "site.css"))
 

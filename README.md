@@ -39,5 +39,5 @@ font-family: Nanum Gothic # Defaults to the directory name
 font-weight: bold         # Defaults to normal
 font-style: normal        # Defaults to normal
 font-display: swap        # Defaults to swap
-unicode-range: latin      # Optional. Subsets the font to these characters: a CSS unicode-range, or latin or latin-ext
+unicode-range: latin      # Optional. Subsets the font to these characters: a CSS unicode-range, latin or latin-ext (or a list of these)
 ```

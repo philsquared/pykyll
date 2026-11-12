@@ -73,9 +73,12 @@ class FontInfo:
         self.font_style = str(data.get("font-style", "normal"))
         self.font_display = data.get("font-display", "swap")
 
-        # If given, the font is subset to just these characters (as a CSS unicode-range, or one of the named ranges)
+        # If given, the font is subset to just these characters (as a CSS unicode-range, one of the named ranges,
+        # or a list of either)
         unicode_range = data.get("unicode-range")
-        self.unicode_range = named_unicode_ranges.get(unicode_range, unicode_range)
+        if isinstance(unicode_range, str):
+            unicode_range = [unicode_range]
+        self.unicode_range = ", ".join(named_unicode_ranges.get(r, r) for r in unicode_range) if unicode_range else None
 
         # Regular faces are just named after the family, other faces also by their weight and/or style
         self.slug = slugify(self.font_family)
